@@ -22,6 +22,7 @@
     "title": "这条通知是用来测试的",
     "content": "欢迎使用马嘉祺超绝课程表",
     "type": "once",
+    "_note": "通知次数为once和every",
     "startTime": "2026-06-01",
     "endTime": "2026-06-04",
     "_note": "时间格式是yyyy-mm-dd",
