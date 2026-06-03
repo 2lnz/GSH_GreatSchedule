@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "新版本发布",
+    "content": "课程表 v2.0 已发布，新增...",
+    "type": "once",
+    "startTime": "2026-06-01 00:00",
+    "endTime": "2026-06-30 23:59",
+    "link": "https://example.com"
+  },
+  {
+    "id": 2,
+    "title": "每日提示",
+    "content": "欢迎使用课程表！",
+    "type": "every",
+    "startTime": "",
+    "endTime": "",
+    "link": ""
+  }
+]
