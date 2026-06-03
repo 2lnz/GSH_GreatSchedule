@@ -1,2 +1,3 @@
-# GSH-inform
-GSH课程表通知测试
+# GSH课程表
+我更喜欢Great schedule
+
