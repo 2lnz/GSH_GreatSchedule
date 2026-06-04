@@ -6,7 +6,7 @@
 
 ## 项目主页
 
-[https://blog.2lnz.top/GSH_GreatSchedule/](https://blog.2lnz.top/GSH_GreatSchedule/)
+[https://github.com/2lnz/GSH_GreatSchedule](https://github.com/2lnz/GSH_GreatSchedule)
 
 ## 主要特性
 
