@@ -613,9 +613,6 @@ section[id] {
   .screenshot-card {
     width: 160px;
   }
-    padding: 24px;
-    margin: 24px 0 20px;
-  }
 
   .version-info {
     gap: 20px;
