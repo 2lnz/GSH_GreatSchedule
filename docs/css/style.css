@@ -3,10 +3,10 @@
   --primary: #2563EB;
   --primary-light: #3B82F6;
   --primary-dark: #1D4ED8;
-  --accent-green: #059669;
-  --accent-amber: #D97706;
-  --accent-rose: #E11D48;
-  --accent-violet: #7C3AED;
+  --accent-green: #0D9488;
+  --accent-amber: #F59E0B;
+  --accent-rose: #F43F5E;
+  --accent-violet: #8B5CF6;
   --bg: #F8FAFC;
   --bg-card: #FFFFFF;
   --text-main: #1E293B;
@@ -263,7 +263,10 @@ section { overflow-x: hidden; }
   font-size: clamp(1.3rem, 2.5vw, 1.8rem);
   margin-bottom: 1.5rem;
   font-weight: 700;
-  color: var(--accent-green);
+  background: linear-gradient(135deg, var(--primary) 0%, #6366F1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .hero-text > .container > p {
@@ -428,7 +431,7 @@ section[id] { scroll-margin-top: 80px; }
 }
 .about-stats > div:hover .stat-value { transition: color 0.25s ease; }
 .about-stats > div:hover .stat-value.blue  { color: var(--primary-light); }
-.about-stats > div:hover .stat-value.green { color: #07B87A; }
+.about-stats > div:hover .stat-value.green { color: #14B8A6; }
 .about-stats > div:hover .stat-value.yellow { color: #F59E0B; }
 .stat-value { font-size: 2rem; font-weight: 800; }
 .stat-label { color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; }
