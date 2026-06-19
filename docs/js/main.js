@@ -2,6 +2,31 @@
 (function () {
   'use strict';
 
+  // ---- Loading screen ----
+  var loader = document.getElementById('loader');
+  var bodyEl = document.body;
+  // Prevent scroll while loading
+  if (loader) {
+    bodyEl.style.overflow = 'hidden';
+  }
+  function hideLoader() {
+    if (loader) {
+      loader.classList.add('hidden');
+      bodyEl.style.overflow = '';
+      // Remove from DOM after transition completes
+      loader.addEventListener('transitionend', function () {
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+      }, { once: true });
+    }
+  }
+  // Hide loader after page fully loads, with a minimum display of 800ms
+  var loaderShown = Date.now();
+  window.addEventListener('load', function () {
+    var elapsed = Date.now() - loaderShown;
+    var delay = Math.max(0, 800 - elapsed);
+    setTimeout(hideLoader, delay);
+  });
+
   // ---- Hamburger menu ----
   var hamburger = document.getElementById('hamburger');
   var overlay = document.getElementById('mobileOverlay');
