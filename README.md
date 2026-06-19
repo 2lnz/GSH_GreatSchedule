@@ -1,6 +1,6 @@
 # GSH课程表 (Great Schedule)
 
-![logo](docs/logo.png ''logo'')
+![logo](./docs/logo.png)
 
 [![Version](https://img.shields.io/badge/version-1.0.2_beta-blue)](https://blog.2lnz.top/GSH_GreatSchedule/)
 
