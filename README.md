@@ -1,6 +1,8 @@
-# GSH课程表 (Great Schedule Helper)
+# GSH课程表 (Great Schedule)
 
-[![Version](https://img.shields.io/badge/version-1.0.1_beta-blue)](https://blog.2lnz.top/GSH_GreatSchedule/)
+![logo](https://gsh.2lnz.top/assets/logo.webp ''logo'')
+
+[![Version](https://img.shields.io/badge/version-1.0.2_beta-blue)](https://blog.2lnz.top/GSH_GreatSchedule/)
 
 基于 [WakeUp课程表](https://github.com/YZune/WakeUpSchedule) 开源项目二次开发。
 
