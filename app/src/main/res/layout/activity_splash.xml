@@ -5,13 +5,12 @@
     android:layout_height="match_parent"
     android:background="?attr/colorSurface">
 
-    <com.google.android.material.imageview.ShapeableImageView
+    <ImageView
         android:id="@+id/iv_splash_logo"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:layout_gravity="center"
-        android:scaleType="centerInside"
-        android:src="@drawable/logo"
-        app:shapeAppearanceOverlay="@style/SplashLogoShape" />
+        android:scaleType="fitXY"
+        android:src="@drawable/logo" />
 
 </FrameLayout>

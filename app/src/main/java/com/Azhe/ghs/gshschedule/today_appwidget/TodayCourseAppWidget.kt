@@ -191,8 +191,14 @@ class TodayCourseAppWidget : AppWidgetProvider() {
                     val c = display[i]
                     rv.setViewVisibility(itemId, android.view.View.VISIBLE)
                     rv.setTextViewText(nameId, c.name)
-                    rv.setTextViewText(locId,
-                        c.location.ifEmpty { context.getString(R.string.widget_no_location) })
+                    val locText = buildString {
+                        append(c.location.ifEmpty { context.getString(R.string.widget_no_location) })
+                        if (!c.teacher.isNullOrBlank()) {
+                            append("    ")
+                            append(c.teacher)
+                        }
+                    }
+                    rv.setTextViewText(locId, locText)
                     rv.setTextViewText(timeId,
                         if (c.startTime == c.endTime) c.startTime
                         else "${c.startTime} - ${c.endTime}")

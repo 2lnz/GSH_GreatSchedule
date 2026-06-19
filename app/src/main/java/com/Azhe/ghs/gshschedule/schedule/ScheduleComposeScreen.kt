@@ -1,5 +1,6 @@
 package com.Azhe.ghs.gshschedule.schedule
 
+import android.content.res.Configuration
 import android.graphics.Color as AndroidColor
 import android.net.Uri
 import android.widget.ImageView
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -325,7 +327,8 @@ private fun ScheduleContent(
     // Read dataVersion to trigger recomposition when table data changes
     val dataVersion = viewModel.dataVersion
 
-    val textColor = Color(viewModel.table.textColor)
+    val isDark = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+    val textColor = if (isDark) MaterialTheme.colorScheme.onSurface else Color(viewModel.table.textColor)
     val maxWeek = viewModel.table.maxWeek
 
     val pagerState = rememberPagerState(
@@ -349,6 +352,26 @@ private fun ScheduleContent(
             .collectLatest { page ->
                 viewModel.selectedWeek = page + 1
             }
+    }
+
+    // When course data changes (import / add / edit / delete), invalidate the
+    // entire card-state cache so stale entries are never served to ScheduleGrid.
+    // NOTE: do NOT call precomputeCardStates here — it runs on Dispatchers.Default
+    // and may read stale allCourseList before Room delivers fresh data to LiveData,
+    // which would re-populate the cache with old data and defeat the invalidation.
+    LaunchedEffect(dataVersion) {
+        viewModel.invalidateCardStateCache()
+    }
+
+    // When the user settles on a different week (pager swipe), pre-compute
+    // neighbour weeks on a background thread WITHOUT clearing the existing cache.
+    LaunchedEffect(viewModel.selectedWeek) {
+        viewModel.precomputeCardStates(viewModel.selectedWeek)
+    }
+
+    // Invalidate cache when table-level configuration changes (start date, showOtherWeek, etc.)
+    LaunchedEffect(viewModel.table.id, viewModel.table.showTime, viewModel.table.maxWeek) {
+        viewModel.invalidateCardStateCache()
     }
 
     // Compute week and day text (replaces the old view references)
@@ -515,7 +538,8 @@ fun ScheduleGrid(
     }
     val itemHeightDp = with(density) { viewModel.itemHeight.toDp() }
     val marTopDp = with(density) { viewModel.marTop.toDp() }
-    val textColor = Color(table.textColor)
+    val isDark = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+    val textColor = if (isDark) MaterialTheme.colorScheme.onSurface else Color(table.textColor)
     val currentDay = CourseUtils.getWeekdayInt()
 
     // Date strings for this week
@@ -558,12 +582,16 @@ fun ScheduleGrid(
                 val isToday = week == viewModel.currentWeek && day == currentDay
                 val dateStr = weekDate[colIdx]
 
-                val alphaColor = Color(
-                    ColorUtils.setAlphaComponent(
-                        table.textColor,
-                        (0.32 * (table.textColor shr 24 and 0xff)).toInt()
+                val alphaColor = if (isDark) {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.32f)
+                } else {
+                    Color(
+                        ColorUtils.setAlphaComponent(
+                            table.textColor,
+                            (0.32 * (table.textColor shr 24 and 0xff)).toInt()
+                        )
                     )
-                )
+                }
 
                 Text(
                     text = "${viewModel.daysArray[day]}\n$dateStr",
@@ -969,6 +997,7 @@ private fun buildCourseCardStates(
         val strBuilder = StringBuilder()
         strBuilder.append(c.courseName)
         if (c.room != "") strBuilder.append("\n@${c.room}")
+        if (!c.teacher.isNullOrBlank()) strBuilder.append("\n${c.teacher}")
         if (isOtherWeek) {
             when (c.type) {
                 1 -> strBuilder.append("\n单周")
@@ -1061,8 +1090,8 @@ private fun WeekSlider(
     val trackHeight = 8.dp
     val thumbW = 6.dp
     val thumbH = 24.dp
-    val trackColor = Color(0xFFE8ECF4)
-    val thumbColor = Color(0xFF3A4B7C)
+    val trackColor = MaterialTheme.colorScheme.surfaceVariant
+    val thumbColor = MaterialTheme.colorScheme.primary
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (isDragging) {

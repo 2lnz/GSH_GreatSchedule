@@ -19,6 +19,7 @@ import java.text.ParseException
 data class TodayWidgetCourse(
     @SerializedName("name") val name: String,
     @SerializedName("location") val location: String,
+    @SerializedName("teacher") val teacher: String,
     @SerializedName("startTime") val startTime: String,
     @SerializedName("endTime") val endTime: String,
     @SerializedName("color") val color: String
@@ -106,6 +107,7 @@ object TodayWidgetDataManager {
                 courses.add(TodayWidgetCourse(
                     name = c.courseName,
                     location = c.room ?: "",
+                    teacher = c.teacher ?: "",
                     startTime = startT,
                     endTime = endT,
                     color = color

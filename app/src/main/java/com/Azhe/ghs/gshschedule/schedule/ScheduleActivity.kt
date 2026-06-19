@@ -2,6 +2,7 @@ package com.Azhe.ghs.gshschedule.schedule
 
 import android.appwidget.AppWidgetManager
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.ViewGroup
@@ -9,6 +10,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,7 +48,11 @@ class ScheduleActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        // 从编辑/导入页面返回时，强制 Compose 刷新课程数据
+        // IMPORTANT: invalidate card-state cache BEFORE incrementing dataVersion.
+        // LaunchedEffect runs its block AFTER composition, so if we only invalidate
+        // there, ScheduleGrid would read the stale cache during the recomposition
+        // triggered by dataVersion++ and never hit the remember{} fallback.
+        viewModel.invalidateCardStateCache()
         viewModel.dataVersion++
         // 同步刷新所有桌面小部件
         AppWidgetUtils.updateWidget(applicationContext)
@@ -55,7 +62,8 @@ class ScheduleActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
+            val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            MaterialTheme(colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()) {
                 ScheduleScreen(
                     viewModel = viewModel,
                     onDrawerItemClick = { id -> handleDrawerClick(id) },

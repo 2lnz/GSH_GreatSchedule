@@ -52,7 +52,9 @@ class NewZFParser(source: String) : Parser(source) {
                     val pList = div.getElementsByTag("p")
                     val weekList = arrayListOf<String>()
                     pList.forEach { e ->
-                        when (e.getElementsByAttribute("title").attr("title")) {
+                        val titleEls = e.getElementsByAttribute("title")
+                        val titleVal = titleEls.attr("title").trim()
+                        when (titleVal) {
                             "教师" -> teacher = e.text().trim()
                             "上课地点" -> room = e.text().trim()
                             "节/周", "周/节" -> {

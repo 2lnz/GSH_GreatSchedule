@@ -49,8 +49,10 @@ class SplashActivity : AppCompatActivity() {
             TodayWidgetDataManager.convertAndStore(applicationContext)
             AppWidgetUtils.updateWidget(applicationContext)
 
-            // 预热公告缓存 — 提前触发网络请求，不阻塞启动
-            AnnouncementManager.preload(applicationContext)
+            // 预热公告缓存 — 独立协程，不阻塞启动流程
+            launch {
+                AnnouncementManager.preload(applicationContext)
+            }
 
             try {
                 val awm = AppWidgetManager.getInstance(applicationContext)

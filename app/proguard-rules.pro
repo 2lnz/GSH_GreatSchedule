@@ -27,10 +27,10 @@
 # 代码混淆压缩比，在0~7之间，默认为5，一般不做修改
 -optimizationpasses 5
 
-# 配置字典
--obfuscationdictionary proguard_dic.txt
--classobfuscationdictionary proguard_dic.txt
--packageobfuscationdictionary proguard_dic.txt
+# 配置字典（proguard_dic.txt 已删除，如需混淆字典请自行添加）
+#-obfuscationdictionary proguard_dic.txt
+#-classobfuscationdictionary proguard_dic.txt
+#-packageobfuscationdictionary proguard_dic.txt
 
 # 混合时不使用大小写混合，混合后的类名为小写
 -dontusemixedcaseclassnames
@@ -189,6 +189,9 @@
 -dontwarn okhttp3.**
 -dontwarn okio.**
 -dontwarn retrofit2.Platform$Java8
+
+# Jackson (missing — excluded from biweekly dependency)
+-dontwarn com.fasterxml.jackson.core.JsonToken
 
 # for iCal4J
 -dontwarn net.fortuna.ical4j.model.**

@@ -308,7 +308,13 @@ class ScheduleAppWidgetService : RemoteViewsService() {
                 strBuilder.append(timeList[c.startNode - 1].startTime).append(" ")
             }
             strBuilder.append(c.courseName)
-            if (c.room != "") strBuilder.append("\n@${c.room}")
+            // 地点 + 教师（二者之间有间距）
+            if (c.room != "" || !c.teacher.isNullOrBlank()) {
+                strBuilder.append("\n")
+                if (c.room != "") strBuilder.append("@${c.room}")
+                if (c.room != "" && !c.teacher.isNullOrBlank()) strBuilder.append("  ")
+                if (!c.teacher.isNullOrBlank()) strBuilder.append(c.teacher)
+            }
 
             // Compact week-type label: "单"/"双" saves horizontal space vs "单周"/"双周".
             // [非本周] is omitted — the 30 % alpha already identifies other-week courses.
