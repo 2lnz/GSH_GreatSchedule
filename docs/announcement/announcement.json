@@ -38,5 +38,16 @@
     "endTime": "",
     "_note": "时间格式是yyyy-mm-dd 00:00",
     "link": "https://gsh.2lnz.top/"
+  },
+  {
+    "id": 5,
+    "title": "OI！GSH课程表v1.0.2_beta发布了哦",
+    "content": "修复了暗色模式下开屏页面logo带有白边的问题\n修复了桌面小组件不显示教师名称的问题\n修复了app主页内不显示教师名称的问题\n修复了暗色模式下主页仍然为亮色背景的问题",
+    "type": "once",
+    "_note": "通知次数为once和every",
+    "startTime": "",
+    "endTime": "",
+    "_note": "时间格式是yyyy-mm-dd 00:00",
+    "link": "https://gsh.2lnz.top/"
   }
 ]
