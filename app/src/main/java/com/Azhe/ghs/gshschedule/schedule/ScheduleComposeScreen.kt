@@ -957,7 +957,7 @@ private fun computeDayMap(showSat: Boolean, showSun: Boolean, sundayFirst: Boole
     return dayMap
 }
 
-private fun buildCourseCardStates(
+internal fun buildCourseCardStates(
     courses: List<CourseBean>,
     week: Int,
     day: Int,

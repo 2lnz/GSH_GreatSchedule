@@ -5,12 +5,17 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.content.edit
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import biweekly.Biweekly
 import biweekly.ICalVersion
 import biweekly.ICalendar
@@ -25,8 +30,6 @@ import com.Azhe.ghs.gshschedule.utils.Const
 import com.Azhe.ghs.gshschedule.utils.CourseUtils
 import com.Azhe.ghs.gshschedule.utils.ICalUtils
 import com.Azhe.ghs.gshschedule.utils.getPrefer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,6 +53,46 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     val allCourseList = Array(7) { MutableLiveData<List<CourseBean>>() }
     val daysArray = arrayOf("日", "一", "二", "三", "四", "五", "六", "日")
     var currentWeek by mutableIntStateOf(1)
+
+    // ── CourseCard state cache (pre-computed on background thread) ──
+    // Key: "week_day", Value: cached card states for that week/day
+    val cardStateCache = mutableStateMapOf<String, List<CourseCardState>>()
+    private var precomputeJob: kotlinx.coroutines.Job? = null
+
+    /** Pre-compute card states for the current week ± 1 on a background thread. */
+    fun precomputeCardStates(week: Int) {
+        precomputeJob?.cancel()
+        val ctx = getApplication<App>()
+        val weeksToCompute = ((week - 1).coerceAtLeast(1)..(week + 1).coerceAtMost(table.maxWeek)).toList()
+        precomputeJob = viewModelScope.launch(Dispatchers.Default) {
+            for (w in weeksToCompute) {
+                for (day in 1..7) {
+                    val key = "${w}_$day"
+                    if (key in cardStateCache) continue  // already cached
+                    val courses = allCourseList[day - 1].value ?: emptyList()
+                    if (courses.isEmpty()) continue
+                    val states = buildCourseCardStates(
+                        courses = courses,
+                        week = w,
+                        day = day,
+                        table = table,
+                        alphaInt = alphaInt,
+                        timeList = timeList,
+                        context = ctx
+                    )
+                    withContext(Dispatchers.Main) {
+                        cardStateCache[key] = states
+                    }
+                }
+            }
+        }
+    }
+
+    /** Invalidate the cache when course data or table config changes. */
+    fun invalidateCardStateCache() {
+        precomputeJob?.cancel()
+        cardStateCache.clear()
+    }
 
     fun initTableSelectList(): LiveData<List<TableSelectBean>> {
         return tableDao.getTableSelectListLiveData()

@@ -23,8 +23,8 @@ android {
         applicationId "com.Azhe.ghs.gshschedule"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 101
-        versionName "1.0.1_beta"
+        versionCode 102
+        versionName "1.0.2_beta"
         resValue "string", "app_name", "GSH课程表"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
