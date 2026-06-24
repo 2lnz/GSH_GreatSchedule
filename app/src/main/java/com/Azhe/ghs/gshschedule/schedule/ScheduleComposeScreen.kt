@@ -27,6 +27,10 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.GetApp
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -922,16 +926,28 @@ private fun BottomSheetContent(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             TextButton(onClick = onTimeSettings) {
-                Text("上课时间", fontSize = 12.sp)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Filled.Schedule, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Text("上课时间", fontSize = 12.sp)
+                }
             }
             TextButton(onClick = onChangeBackground) {
-                Text("更换背景", fontSize = 12.sp)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Filled.Palette, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Text("更换背景", fontSize = 12.sp)
+                }
             }
             TextButton(onClick = onCheckCourses) {
-                Text("已添课程", fontSize = 12.sp)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Filled.Checklist, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Text("已添课程", fontSize = 12.sp)
+                }
             }
             TextButton(onClick = onFAQ) {
-                Text("常见问题", fontSize = 12.sp)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Filled.Help, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Text("常见问题", fontSize = 12.sp)
+                }
             }
         }
     }
@@ -1087,7 +1103,7 @@ private fun WeekSlider(
     val fraction = if (maxWeek <= 1) 0f
         else ((sliderPos - 1f) / (maxWeek - 1f)).coerceIn(0f, 1f)
 
-    val trackHeight = 8.dp
+    val trackHeight = 14.dp
     val thumbW = 6.dp
     val thumbH = 24.dp
     val trackColor = MaterialTheme.colorScheme.surfaceVariant

@@ -84,7 +84,7 @@
     <string name="setting_day_night_theme">显示主题</string>
 
     <!-- Today course widget -->
-    <string name="widget_no_course">你怎么知道我今天没课~\n\n¯\\_(ツ)_/¯</string>
+    <string name="widget_no_course">猜猜是谁\n今天没课吖~\n\n¯\\_(ツ)_/¯</string>
     <string name="widget_all_ended">今天没课咯~\n\n¯\\_(ツ)_/¯</string>
     <string name="widget_no_location">无地点</string>
     <string name="widget_remind_title">上课提醒</string>
