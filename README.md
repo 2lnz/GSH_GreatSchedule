@@ -12,6 +12,9 @@
 
 [https://github.com/2lnz/GSH_GreatSchedule](https://github.com/2lnz/GSH_GreatSchedule)
 
+##软件官网
+［https://gsh.2lnz.top］(https://gsh.2lnz.top)
+
 ## 主要特性
 
 - **Material 3 / Jetpack Compose** — 现代化 UI，支持深色模式
