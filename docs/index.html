@@ -10,6 +10,13 @@
   <meta property="og:type" content="website">
   <title>GSH课程表 — Great Schedule</title>
   <link rel="icon" type="image/webp" href="assets/logo.webp">
+  <!-- Preconnect to external origins -->
+  <link rel="preconnect" href="https://apk.2lnz.top">
+  <link rel="preconnect" href="https://gsh.2lnz.top">
+  <link rel="preconnect" href="https://home.2lnz.top">
+  <!-- Preload critical resources -->
+  <link rel="preload" href="assets/logo.webp" as="image">
+  <link rel="preload" href="css/style.css" as="style">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -20,11 +27,27 @@
       <span class="loader-text">Welcome<br>Greater Schedule</span>
     </div>
   </div>
+  <script>
+    // Inline loader close — guaranteed to run, no external dependency
+    (function(){
+      var l = document.getElementById('loader');
+      var done = false;
+      function hide() {
+        if (done || !l) return;
+        done = true;
+        l.classList.add('hidden');
+        document.body.style.overflow = '';
+        setTimeout(function(){ if (l.parentNode) l.parentNode.removeChild(l); }, 600);
+      }
+      window.addEventListener('load', function(){ setTimeout(hide, 400); });
+      setTimeout(hide, 2500);
+    })();
+  </script>
 
   <!-- Navigation -->
   <nav class="nav" id="nav">
     <a href="#hero-text" class="nav-brand">
-      <img src="assets/logo.webp" alt="GSH" class="nav-logo-img">
+      <img src="assets/logo.webp" alt="GSH" class="nav-logo-img" width="32" height="32">
       <span>GSH课程表</span>
     </a>
     <div class="nav-links" id="navLinks">
@@ -76,7 +99,7 @@
     <section id="hero-visual" class="hero-visual-section">
       <div class="container">
         <div class="hero-visual">
-          <img src="assets/logo.webp" alt="GSH" class="hero-logo-large">
+          <img src="assets/logo.webp" alt="GSH" class="hero-logo-large" width="110" height="110" fetchpriority="high">
           <div class="feature-badge badge-1">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6M12 9v6"/></svg>
             一键导入
@@ -129,7 +152,7 @@
             <div class="phone-frame">
               <div class="phone-screen-header">
                 <div style="display:flex;align-items:center;gap:8px;">
-                  <img src="assets/logo.webp" alt="" class="app-icon-sm">
+                  <img src="assets/logo.webp" alt="" class="app-icon-sm" width="22" height="22" loading="lazy">
                   <span>GSH课程表</span>
                 </div>
                 <div class="phone-screen-dots">
@@ -293,7 +316,7 @@
         <div class="screenshots-row">
           <div class="shot-group">
             <div class="screenshot-card">
-              <img src="assets/001.webp" alt="GSH课程表 截图一" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <img src="assets/001.webp" alt="GSH课程表 截图一" width="200" height="356" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
               <div class="screenshot-placeholder" style="display:none">001.jpg</div>
             </div>
             <div class="shot-label">课表周视图<br>课程一目了然</div>
@@ -301,7 +324,7 @@
           <div class="shot-group">
             <div class="shot-label">桌面小部件<br>今日课程随时看</div>
             <div class="screenshot-card">
-              <img src="assets/002.webp" alt="GSH课程表 截图二" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <img src="assets/002.webp" alt="GSH课程表 截图二" width="200" height="356" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
               <div class="screenshot-placeholder" style="display:none">002.jpg</div>
             </div>
           </div>
@@ -400,6 +423,6 @@
     <p>Powered by  <svg width="14" height="14" viewBox="0 0 24 24" fill="#E11D48" stroke="none" style="display:inline;vertical-align:-2px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> </a> · Made with <svg width="14" height="14" viewBox="0 0 24 24" fill="#E11D48" stroke="none" style="display:inline;vertical-align:-2px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> by <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a></p>
   </footer>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js" defer>
 </body>
 </html>

@@ -39,6 +39,8 @@
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
+  /* Prevent overscroll jank on mobile */
+  overscroll-behavior-y: none;
 }
 
 body {
@@ -53,6 +55,8 @@ body {
 a { color: var(--primary); text-decoration: none; transition: var(--transition); }
 a:hover { color: var(--primary-dark); }
 img { max-width: 100%; height: auto; display: block; }
+/* Ensure explicit width/height attrs don't break responsive aspect ratio */
+img[width][height] { height: auto; }
 
 /* ===== Loading Screen ===== */
 .loader {
@@ -448,7 +452,7 @@ section { overflow-x: hidden; }
 
 /* ===== Section Common ===== */
 section[id] { scroll-margin-top: 80px; }
-.section-padding { padding: 100px 0; scroll-snap-align: start; scroll-snap-stop: always; max-width: 100vw; overflow-x: hidden; }
+.section-padding { padding: 100px 0; scroll-snap-align: start; max-width: 100vw; overflow-x: hidden; }
 
 .section-title { text-align: center; margin-bottom: 3.5rem; }
 .section-title h2 { font-size: 2.2rem; margin-bottom: 0.75rem; font-weight: 800; color: var(--text-main); }
@@ -644,11 +648,6 @@ section[id] { scroll-margin-top: 80px; }
 .tag-purple { background: #F5F3FF; color: var(--accent-violet); }
 
 /* ===== Screenshots ===== */
-.screenshots { padding: 100px 0; background: #fff; }
-.screenshots .section-title { text-align: center; margin-bottom: 3.5rem; }
-.screenshots .section-title h2 { font-size: 2.2rem; margin-bottom: 0.75rem; font-weight: 800; }
-.screenshots .section-title p { color: var(--text-secondary); font-size: 1.05rem; }
-
 .screenshots-row { display: flex; align-items: center; justify-content: center; gap: 40px; max-width: 900px; margin: 0 auto; flex-wrap: wrap; }
 .shot-group { display: flex; align-items: center; gap: 20px; }
 .shot-label { font-size: 0.9rem; color: var(--text-secondary); text-align: center; line-height: 1.7; max-width: 120px; }
@@ -687,7 +686,6 @@ section[id] { scroll-margin-top: 80px; }
   background: var(--bg);
 }
 
-/* ===== Download ===== */
 /* ===== Snap Page (screenshots, download+about) ===== */
 .snap-page {
   min-height: 100vh;
@@ -698,8 +696,6 @@ section[id] { scroll-margin-top: 80px; }
   max-width: 100vw;
   overflow-x: hidden;
 }
-
-.final-download { padding: 100px 0; }
 
 .final-download-grid {
   display: grid;
@@ -871,7 +867,7 @@ section[id] { scroll-margin-top: 80px; }
   .badge-5 { top: 5%; right: 5%; left: auto; }
 
   /* About */
-  .section-padding { padding: 60px 0; scroll-snap-stop: always; }
+  .section-padding { padding: 60px 0; }
   .about-grid { grid-template-columns: 1fr; gap: 2rem; }
   .about-grid h3 { font-size: 1.4rem; }
   .about-grid > div:first-child > p { font-size: 0.9rem; }
