@@ -11,7 +11,7 @@
   --bg-card: #FFFFFF;
   --text-main: #1E293B;
   --text-secondary: #475569;
-  --text-muted: #94A3B8;
+  --text-muted: #64748B;
   --border: #E2E8F0;
   --border-light: #F1F5F9;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
@@ -52,8 +52,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--primary); text-decoration: none; transition: var(--transition); }
+a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; transition: var(--transition); }
 a:hover { color: var(--primary-dark); }
+/* Nav / buttons / footer — underline is unnecessary noise */
+nav a, .btn-primary, .btn-secondary, .footer a, .nav-dl-btn, .mobile-nav-panel a,
+.download-actions a, .tech-tag, .tag { text-decoration: none; }
 img { max-width: 100%; height: auto; display: block; }
 /* Ensure explicit width/height attrs don't break responsive aspect ratio */
 img[width][height] { height: auto; }
@@ -87,17 +90,17 @@ img[width][height] { height: auto; }
   font-weight: 900;
   letter-spacing: -0.5px;
   text-align: center;
-  background: linear-gradient(90deg, var(--primary) 0%, #60A5FA 100%) no-repeat;
-  background-size: 0% 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, #60A5FA 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: textReveal 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+  clip-path: inset(0 100% 0 0);
+  animation: textReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
 }
 
 @keyframes textReveal {
-  from { background-size: 0% 100%; }
-  to   { background-size: 100% 100%; }
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
 }
 
 .container { max-width: 1100px; width: 100%; margin: 0 auto; padding: 0 2rem; }
@@ -128,7 +131,7 @@ section { overflow-x: hidden; }
   }
   html { scroll-behavior: auto; }
   .fade-in { opacity: 1; animation: none; }
-  .loader-text { animation: none; -webkit-text-fill-color: var(--primary); }
+  .loader-text { animation: none; clip-path: none; }
 }
 
 /* ===== Navigation ===== */

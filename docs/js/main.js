@@ -35,6 +35,14 @@
   // ---- Nav highlight on scroll ----
   var desktopNavLinks = document.querySelectorAll('.nav-links a');
   var sections = [];
+  var sectionTops = []; // cached offsetTop values to avoid forced reflow
+
+  function cacheSectionPositions() {
+    sectionTops = [];
+    sections.forEach(function (s) {
+      sectionTops.push(s.el.offsetTop);
+    });
+  }
 
   desktopNavLinks.forEach(function (link) {
     var href = link.getAttribute('href');
@@ -47,6 +55,8 @@
   sections.sort(function (a, b) {
     return a.el.offsetTop - b.el.offsetTop;
   });
+  cacheSectionPositions();
+  window.addEventListener('resize', cacheSectionPositions);
 
   var ticking = false;
   window.addEventListener('scroll', function () {
@@ -55,9 +65,9 @@
       requestAnimationFrame(function () {
         var scrollPos = window.scrollY + 120;
         var current = sections[0];
-        sections.forEach(function (s) {
-          if (s.el.offsetTop <= scrollPos) current = s;
-        });
+        for (var i = 0; i < sections.length; i++) {
+          if (sectionTops[i] <= scrollPos) current = sections[i];
+        }
         desktopNavLinks.forEach(function (l) { l.classList.remove('active'); });
         if (current) current.link.classList.add('active');
         ticking = false;

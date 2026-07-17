@@ -28,7 +28,7 @@
     </div>
   </div>
   <script>
-    // Inline loader close — guaranteed to run, no external dependency
+    // Inline loader — hide as soon as text reveal animation finishes
     (function(){
       var l = document.getElementById('loader');
       var done = false;
@@ -39,8 +39,10 @@
         document.body.style.overflow = '';
         setTimeout(function(){ if (l.parentNode) l.parentNode.removeChild(l); }, 600);
       }
-      window.addEventListener('load', function(){ setTimeout(hide, 400); });
-      setTimeout(hide, 2500);
+      // Hide when text reveal animation completes, or 2s fallback
+      var text = document.querySelector('.loader-text');
+      if (text) text.addEventListener('animationend', function(){ setTimeout(hide, 200); });
+      setTimeout(hide, 2000);
     })();
   </script>
 
