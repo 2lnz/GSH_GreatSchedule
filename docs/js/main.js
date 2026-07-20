@@ -90,6 +90,34 @@
     observer.observe(el);
   });
 
+  // ---- FAQ accordion ----
+  document.querySelectorAll('.faq-q').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var expanded = btn.getAttribute('aria-expanded') === 'true';
+      // Close all others
+      document.querySelectorAll('.faq-q[aria-expanded="true"]').forEach(function (b) {
+        if (b !== btn) {
+          b.setAttribute('aria-expanded', 'false');
+          b.nextElementSibling.classList.remove('open');
+        }
+      });
+      // Toggle current
+      btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      btn.nextElementSibling.classList.toggle('open', !expanded);
+    });
+  });
+
+  // ---- Disable right-click & DevTools shortcuts ----
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  document.addEventListener('keydown', function (e) {
+    // F12
+    if (e.key === 'F12') { e.preventDefault(); return; }
+    // Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C / Ctrl+U
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { e.preventDefault(); return; }
+    if (e.ctrlKey && e.key === 'U') { e.preventDefault(); return; }
+  });
+
   // ---- ESC to close menu ----
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && hamburger.classList.contains('open')) {
