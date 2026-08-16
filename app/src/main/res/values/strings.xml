@@ -78,7 +78,7 @@
     <string name="setting_widget_stroke_color">小部件格子边框颜色</string>
 
     <string name="setting_auto_check_update">自动检查更新</string>
-    <string name="setting_show_day_widget_bg">显示日视图背景</string>
+    <string name="export_settings_desc">需要自行选择一个位置保存\n不要修改扩展名\n导出后可选分享\n长按第二个按钮科普ics格式妙用</string>
     <string name="setting_show_suda_life">显示侧栏「苏大生活」</string>
     <string name="setting_setup_schedule">设置当前课表</string>
     <string name="setting_day_night_theme">显示主题</string>
@@ -87,9 +87,7 @@
     <string name="widget_no_course">猜猜是谁\n今天没课吖~\n\n¯\\_(ツ)_/¯</string>
     <string name="widget_all_ended">今天没课咯~\n\n¯\\_(ツ)_/¯</string>
     <string name="widget_no_location">无地点</string>
-    <string name="widget_remind_title">上课提醒</string>
-    <string name="widget_remind_action">我知道啦</string>
-    <string name="widget_location_label">地点：</string>
+    <string name="widget_semester_ended">꒰ঌ(˶ˆᗜˆ˵)໒꒱\n学期结束了</string>
 
     <!-- Splash permission dialog -->
     <string name="widget_permission_title">为了保证小组件能够实时更新，需要您授予以下权限：\n自启动 + 电池优化白名单</string>

@@ -139,9 +139,6 @@
             android:name=".schedule_import.SchoolListActivity"
             android:label="选择学校" />
         <activity
-            android:name=".settings.AdvancedSettingsActivity"
-            android:label="高级功能" />
-        <activity
             android:name=".intro.IntroYoungActivity"
             android:label="咩咩" />
         <activity

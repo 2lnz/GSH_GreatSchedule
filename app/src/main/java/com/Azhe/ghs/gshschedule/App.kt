@@ -30,14 +30,7 @@ class App : Application() {
         // Apply Material You dynamic colors (Android 12+)
         DynamicColors.applyToActivitiesIfAvailable(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            var channelId = "schedule_reminder"
-            var channelName = "课程提醒"
-            var importance = NotificationManager.IMPORTANCE_HIGH
-            createNotificationChannel(this, channelId, channelName, importance)
-            channelId = "news"
-            channelName = "公告"
-            importance = NotificationManager.IMPORTANCE_LOW
-            createNotificationChannel(this, channelId, channelName, importance)
+            createNotificationChannel(this, "news", "公告", NotificationManager.IMPORTANCE_LOW)
         }
         when (getPrefer().getInt(Const.KEY_DAY_NIGHT_THEME, 2)) {
             0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

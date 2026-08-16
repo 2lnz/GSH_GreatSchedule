@@ -120,15 +120,6 @@ class ScheduleUI(override val ctx: Context, table: TableBean, day: Int, forWidge
             })
         }
 
-        if (!forWidget && context.getPrefer().getBoolean(Const.KEY_SCHEDULE_BLANK_AREA, true)) {
-            addView(View(context), ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, itemHeight * 4).apply {
-                topToBottom = R.id.anko_tv_node1 + table.nodes - 1
-                bottomToBottom = ConstraintSet.PARENT_ID
-                startToStart = ConstraintSet.PARENT_ID
-                endToEnd = ConstraintSet.PARENT_ID
-            })
-        }
-
         for (i in 0 until col - 1) {
             addView(FrameLayout(context).apply { id = R.id.anko_ll_week_panel_0 + i }, ConstraintLayout.LayoutParams(0,
                     ConstraintLayout.LayoutParams.WRAP_CONTENT).apply {

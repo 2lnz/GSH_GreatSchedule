@@ -1,10 +1,7 @@
 package com.Azhe.ghs.gshschedule.settings.provider
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.util.TypedValue
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -14,10 +11,8 @@ import com.Azhe.ghs.gshschedule.R
 import com.Azhe.ghs.gshschedule.settings.items.BaseSettingItem
 import com.Azhe.ghs.gshschedule.settings.items.SettingType
 import com.Azhe.ghs.gshschedule.settings.items.SwitchItem
-import com.Azhe.ghs.gshschedule.utils.Const
-import com.Azhe.ghs.gshschedule.utils.getPrefer
+import com.Azhe.ghs.gshschedule.settings.widget.ThemeSwitch
 import splitties.dimensions.dip
-import splitties.resources.color
 
 class SwitchItemProvider : BaseItemProvider<BaseSettingItem>() {
 
@@ -58,18 +53,15 @@ class SwitchItemProvider : BaseItemProvider<BaseSettingItem>() {
                 marginEnd = dip(16)
             })
 
-            val checkBox = AppCompatCheckBox(context).apply {
+            val checkBox = ThemeSwitch(context).apply {
                 id = R.id.anko_check_box
-                val color = context.getPrefer().getInt(Const.KEY_THEME_COLOR, color(R.color.colorAccent))
-                val states = arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf())
-                val colors = intArrayOf(color, Color.GRAY)
-                supportButtonTintList = ColorStateList(states, colors)
             }
 
-            addView(checkBox, ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, dip(32)).apply {
+            addView(checkBox, ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, dip(22)).apply {
                 endToEnd = ConstraintSet.PARENT_ID
                 topToTop = ConstraintSet.PARENT_ID
                 bottomToBottom = ConstraintSet.PARENT_ID
+                marginEnd = dip(16)
             })
         }
         view.layoutParams =
@@ -82,7 +74,7 @@ class SwitchItemProvider : BaseItemProvider<BaseSettingItem>() {
         if (data == null) return
         val item = data as SwitchItem
         helper.setText(R.id.anko_text_view, item.title)
-        helper.getView<AppCompatCheckBox>(R.id.anko_check_box).apply {
+        helper.getView<ThemeSwitch>(R.id.anko_check_box).apply {
             isChecked = item.checked
         }
         if (data.desc.isEmpty()) {

@@ -1,6 +1,5 @@
 package com.Azhe.ghs.gshschedule.settings.provider
 
-import android.graphics.Color
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
@@ -13,11 +12,9 @@ import com.Azhe.ghs.gshschedule.R
 import com.Azhe.ghs.gshschedule.settings.items.BaseSettingItem
 import com.Azhe.ghs.gshschedule.settings.items.CategoryItem
 import com.Azhe.ghs.gshschedule.settings.items.SettingType
-import com.Azhe.ghs.gshschedule.utils.Const
 import com.Azhe.ghs.gshschedule.utils.ViewUtils
-import com.Azhe.ghs.gshschedule.utils.getPrefer
 import splitties.dimensions.dip
-import splitties.resources.color
+import splitties.resources.styledColor
 
 class CategoryItemProvider : BaseItemProvider<BaseSettingItem>() {
 
@@ -36,14 +33,13 @@ class CategoryItemProvider : BaseItemProvider<BaseSettingItem>() {
             }, LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, ViewUtils.getStatusBarHeight(context) + dip(48)))
 
             addView(LinearLayoutCompat(context).apply {
-                setPadding(dip(16), dip(2), dip(16), dip(2))
-                setBackgroundColor(context.getPrefer().getInt(Const.KEY_THEME_COLOR, color(R.color.colorAccent)))
+                setPadding(dip(16), dip(8), dip(16), dip(4))
 
                 addView(AppCompatTextView(context).apply {
                     id = R.id.anko_text_view
                     textSize = 12f
                     setLines(1)
-                    setTextColor(Color.WHITE)
+                    setTextColor(styledColor(R.attr.colorOnSurfaceVariant))
                     gravity = Gravity.CENTER_VERTICAL
                     typeface = Typeface.DEFAULT_BOLD
                 }, LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT))

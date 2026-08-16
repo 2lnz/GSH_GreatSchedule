@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
@@ -11,10 +12,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.core.app.ShareCompat
 import androidx.lifecycle.Observer
 import com.Azhe.ghs.gshschedule.AppDatabase
@@ -63,7 +67,15 @@ class ScheduleActivity : BaseActivity() {
 
         setContent {
             val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-            MaterialTheme(colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme()) {
+            // 与设置页（XML 主题 colorPrimary=#C98294 + DynamicColors）保持一致的配色：
+            // Android 12+ 用壁纸动态色，低版本回退到项目 seed 粉色 #C98294。
+            val colorScheme = when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
+                    if (darkTheme) dynamicDarkColorScheme(this) else dynamicLightColorScheme(this)
+                darkTheme -> darkColorScheme(primary = Color(0xFFC98294))
+                else -> lightColorScheme(primary = Color(0xFFC98294))
+            }
+            MaterialTheme(colorScheme = colorScheme) {
                 ScheduleScreen(
                     viewModel = viewModel,
                     onDrawerItemClick = { id -> handleDrawerClick(id) },
@@ -303,24 +315,11 @@ class ScheduleActivity : BaseActivity() {
                     }
                     viewModel.currentWeek = CourseUtils.countWeek(viewModel.table.startDate, viewModel.table.sundayFirst)
                     viewModel.selectedWeek = viewModel.currentWeek
-                } else {
-                    MaterialAlertDialogBuilder(this@ScheduleActivity)
-                        .setTitle("提示")
-                        .setMessage("发现当前周已超出设定的周数范围，是否去设置修改「当前周」或「开学日期」？")
-                        .setPositiveButton("打开设置") { _, _ ->
-                            startActivityForResult(
-                                Intent(this@ScheduleActivity, ScheduleSettingsActivity::class.java).apply {
-                                    putExtra("tableData", viewModel.table)
-                                },
-                                Const.REQUEST_CODE_SCHEDULE_SETTING
-                            )
-                        }
-                        .setNegativeButton(R.string.cancel, null)
-                        .show()
                 }
             }
 
             viewModel.timeList = viewModel.getTimeList(viewModel.table.timeTable)
+            viewModel.showTimeDetail = getPrefer().getBoolean(Const.KEY_SCHEDULE_DETAIL_TIME, true)
             viewModel.alphaInt = (255 * (viewModel.table.itemAlpha.toFloat() / 100)).roundToInt()
             viewModel.itemHeight = dip(viewModel.table.itemHeight)
 

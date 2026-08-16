@@ -2,19 +2,15 @@ package com.Azhe.ghs.gshschedule.today_appwidget
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
-import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.widget.RemoteViews
-import androidx.core.app.NotificationCompat
 import com.Azhe.ghs.gshschedule.R
 import com.Azhe.ghs.gshschedule.SplashActivity
 import com.Azhe.ghs.gshschedule.utils.*
@@ -32,14 +28,9 @@ class TodayCourseAppWidget : AppWidgetProvider() {
     @SuppressLint("NewApi")
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            "WAKEUP_REMIND_COURSE" -> handleRemind(context, intent)
             "WAKEUP_BACK_TIME",
             "WAKEUP_PERIODIC_REFRESH" -> handleRefresh(context)
             "WAKEUP_NEXT_DAY" -> handleNextDay(context)
-            "WAKEUP_CANCEL_REMINDER" -> {
-                val nm = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                nm.cancel(intent.getIntExtra("index", 0))
-            }
         }
         super.onReceive(context, intent)
     }
@@ -75,43 +66,6 @@ class TodayCourseAppWidget : AppWidgetProvider() {
     }
 
     // ── Handlers ───────────────────────────────────────────────
-
-    private fun handleRemind(context: Context, intent: Intent) {
-        if (!context.getPrefer().getBoolean(Const.KEY_COURSE_REMIND, false)) return
-        val courseName = intent.getStringExtra("courseName") ?: return
-        val room = intent.getStringExtra("room")?.ifEmpty { "??" } ?: "??"
-        val time = intent.getStringExtra("time") ?: ""
-        val weekDay = intent.getStringExtra("weekDay") ?: ""
-        val index = intent.getIntExtra("index", 0)
-
-        val nm = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        val cancelPi = PendingIntent.getBroadcast(context, index,
-            Intent(context, TodayCourseAppWidget::class.java).apply {
-                action = "WAKEUP_CANCEL_REMINDER"
-                putExtra("index", index)
-            }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        val openPi = PendingIntent.getActivity(context, 0,
-            Intent(context, SplashActivity::class.java),
-            PendingIntent.FLAG_IMMUTABLE)
-
-        nm.notify(index, NotificationCompat.Builder(context, "schedule_reminder")
-            .setContentTitle("$time $courseName")
-            .setSubText(context.getString(R.string.widget_remind_title))
-            .setContentText("$weekDay  ${context.getString(R.string.widget_location_label)}??$room")
-            .setWhen(System.currentTimeMillis())
-            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_launcher))
-            .setSmallIcon(R.drawable.wakeup)
-            .setAutoCancel(false)
-            .setOngoing(context.getPrefer().getBoolean(Const.KEY_REMINDER_ON_GOING, false))
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setDefaults(NotificationCompat.DEFAULT_VIBRATE or NotificationCompat.DEFAULT_LIGHTS)
-            .setVibrate(longArrayOf(0, 5000, 500, 5000))
-            .addAction(R.drawable.wakeup, context.getString(R.string.widget_remind_action), cancelPi)
-            .setContentIntent(openPi)
-            .build())
-    }
 
     private fun handleRefresh(context: Context) {
         goAsync {
@@ -164,7 +118,12 @@ class TodayCourseAppWidget : AppWidgetProvider() {
             nowMins < endMins
         } ?: emptyList()
 
-        if (activeCourses.isEmpty()) {
+        if (data?.semesterEnded == true) {
+            // 学期结束提示
+            rv.setViewVisibility(R.id.ll_courses, android.view.View.GONE)
+            rv.setViewVisibility(R.id.tv_empty, android.view.View.VISIBLE)
+            rv.setTextViewText(R.id.tv_empty, context.getString(R.string.widget_semester_ended))
+        } else if (activeCourses.isEmpty()) {
             // Empty state
             rv.setViewVisibility(R.id.ll_courses, android.view.View.GONE)
             rv.setViewVisibility(R.id.tv_empty, android.view.View.VISIBLE)
@@ -303,49 +262,5 @@ class TodayCourseAppWidget : AppWidgetProvider() {
                 manager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, midnightPi)
         }
 
-        // 4. Also schedule start-reminder notifications
-        scheduleReminderAlarms(context, data, manager, nowMins)
-    }
-
-    @SuppressLint("NewApi")
-    private fun scheduleReminderAlarms(context: Context, data: TodayWidgetData, manager: AlarmManager, nowMins: Int) {
-        if (!context.getPrefer().getBoolean(Const.KEY_COURSE_REMIND, false)) return
-        val before = context.getPrefer().getInt(Const.KEY_REMINDER_TIME, 20)
-        val weekDay = CourseUtils.getWeekday()
-
-        data.courses.forEachIndexed { index, course ->
-            val startParts = course.startTime.split(":")
-            val startMins = (startParts.getOrElse(0) { "0" }.toIntOrNull() ?: 0) * 60 +
-                           (startParts.getOrElse(1) { "0" }.toIntOrNull() ?: 0)
-            if (nowMins >= startMins) return@forEachIndexed
-
-            calendar.timeInMillis = System.currentTimeMillis()
-            calendar.set(Calendar.HOUR_OF_DAY,
-                startParts.getOrElse(0) { "0" }.toIntOrNull() ?: 0)
-            calendar.set(Calendar.MINUTE,
-                startParts.getOrElse(1) { "0" }.toIntOrNull() ?: 0)
-            calendar.add(Calendar.MINUTE, -before)
-            calendar.set(Calendar.SECOND, 0)
-            calendar.set(Calendar.MILLISECOND, 0)
-
-            if (calendar.timeInMillis <= System.currentTimeMillis()) return@forEachIndexed
-
-            val pi = PendingIntent.getBroadcast(context, index,
-                Intent(context, TodayCourseAppWidget::class.java).apply {
-                    action = "WAKEUP_REMIND_COURSE"
-                    putExtra("courseName", course.name)
-                    putExtra("room", course.location)
-                    putExtra("weekDay", weekDay)
-                    putExtra("index", index)
-                    putExtra("time", course.startTime)
-                }, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-            when {
-                Build.VERSION.SDK_INT >= 23 ->
-                    manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pi)
-                Build.VERSION.SDK_INT in 19..22 ->
-                    manager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pi)
-            }
-        }
     }
 }

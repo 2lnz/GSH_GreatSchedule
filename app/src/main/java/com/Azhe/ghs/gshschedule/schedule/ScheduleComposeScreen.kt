@@ -638,10 +638,12 @@ fun ScheduleGrid(
                             content = {
                                 Text(text = node.toString(), color = textColor, fontSize = 12.sp,
                                     lineHeight = 12.sp, softWrap = false)
-                                Text(text = start, color = textColor, fontSize = timeSize,
-                                    lineHeight = timeSize, maxLines = 1, softWrap = false)
-                                Text(text = end, color = textColor, fontSize = timeSize,
-                                    lineHeight = timeSize, maxLines = 1, softWrap = false)
+                                if (viewModel.showTimeDetail) {
+                                    Text(text = start, color = textColor, fontSize = timeSize,
+                                        lineHeight = timeSize, maxLines = 1, softWrap = false)
+                                    Text(text = end, color = textColor, fontSize = timeSize,
+                                        lineHeight = timeSize, maxLines = 1, softWrap = false)
+                                }
                             }
                         ) { measurables, constraints ->
                             val w = constraints.maxWidth
@@ -649,11 +651,17 @@ fun ScheduleGrid(
                             // measure each child with its own tight lineHeight
                             val p = measurables.map { it.measure(constraints.copy(minWidth = 0, minHeight = 0)) }
                             layout(w, h) {
-                                var y = 0
-                                for (i in p.indices) {
-                                    if (y + p[i].height <= h) {
-                                        p[i].placeRelative((w - p[i].width) / 2, y)
-                                        y += p[i].height
+                                if (p.size == 1) {
+                                    // 只显示节数时，居中摆放
+                                    val node = p[0]
+                                    node.placeRelative((w - node.width) / 2, (h - node.height) / 2)
+                                } else {
+                                    var y = 0
+                                    for (i in p.indices) {
+                                        if (y + p[i].height <= h) {
+                                            p[i].placeRelative((w - p[i].width) / 2, y)
+                                            y += p[i].height
+                                        }
                                     }
                                 }
                             }

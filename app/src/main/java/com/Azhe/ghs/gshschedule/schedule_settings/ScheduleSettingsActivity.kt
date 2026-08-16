@@ -11,7 +11,7 @@ import android.text.TextWatcher
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +25,6 @@ import com.Azhe.ghs.gshschedule.bean.TableBean
 import com.Azhe.ghs.gshschedule.bean.TableSelectBean
 import com.Azhe.ghs.gshschedule.schedule.DonateFragment
 import com.Azhe.ghs.gshschedule.schedule_manage.ScheduleManageActivity
-import com.Azhe.ghs.gshschedule.settings.AdvancedSettingsActivity
 import com.Azhe.ghs.gshschedule.settings.SettingItemAdapter
 import com.Azhe.ghs.gshschedule.settings.TimeSettingsActivity
 import com.Azhe.ghs.gshschedule.settings.items.*
@@ -119,14 +118,14 @@ class ScheduleSettingsActivity : BaseListActivity(), ColorPickerFragment.ColorPi
         mAdapter.addChildClickViewIds(R.id.anko_check_box)
         mAdapter.setOnItemChildClickListener { _, view, position ->
             when (val item = showItems[position]) {
-                is SwitchItem -> onSwitchItemCheckChange(item, view.findViewById<AppCompatCheckBox>(R.id.anko_check_box).isChecked)
+                is SwitchItem -> onSwitchItemCheckChange(item, view.findViewById<SwitchCompat>(R.id.anko_check_box).isChecked)
             }
         }
         mAdapter.setOnItemClickListener { _, view, position ->
             when (val item = showItems[position]) {
                 is HorizontalItem -> onHorizontalItemClick(item, position)
                 is VerticalItem -> onVerticalItemClick(item)
-                is SwitchItem -> view.findViewById<AppCompatCheckBox>(R.id.anko_check_box).performClick()
+                is SwitchItem -> view.findViewById<SwitchCompat>(R.id.anko_check_box).performClick()
                 is SeekBarItem -> onSeekBarItemClick(item, position)
             }
         }
@@ -194,9 +193,6 @@ class ScheduleSettingsActivity : BaseListActivity(), ColorPickerFragment.ColorPi
             items.add(SwitchItem("周日为每周第一天", viewModel.table.sundayFirst, keys = listOf("周日", "第一天", "起始", "星期天", "天")))
             items.add(SwitchItem("显示周六", viewModel.table.showSat, keys = listOf("周六", "显示", "星期六", "六")))
             items.add(SwitchItem("显示周日", viewModel.table.showSun, keys = listOf("周日", "显示", "星期日", "日", "星期天", "周天")))
-
-            items.add(CategoryItem("高级", false))
-            items.add(VerticalItem("解锁高级功能", "解锁赞助一下开发者\n高级功能会持续更新~", keys = listOf("高级")))
         }
 
         items.add(VerticalItem("", "\n\n\n"))
@@ -376,12 +372,6 @@ class ScheduleSettingsActivity : BaseListActivity(), ColorPickerFragment.ColorPi
             }
             "小部件格子边框颜色" -> {
                 buildColorPickerDialogBuilder(viewModel.table.widgetStrokeColor, WIDGET_STROKE_COLOR)
-            }
-            "解锁高级功能" -> {
-                start<AdvancedSettingsActivity>()
-            }
-            "看看都有哪些高级功能" -> {
-                start<AdvancedSettingsActivity>()
             }
         }
     }

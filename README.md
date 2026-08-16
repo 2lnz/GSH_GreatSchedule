@@ -4,7 +4,7 @@
   <img src="docs/logo.png" alt="logo" width="150" style="border-radius:50%;">
 </p>
 
-[![Version](https://img.shields.io/badge/version-1.0.2_beta-blue)](https://blog.2lnz.top/GSH_GreatSchedule/)
+[![Version](https://img.shields.io/badge/version-1.0.3_beta-blue)](https://blog.2lnz.top/GSH_GreatSchedule/)
 
 基于 [WakeUp课程表](https://github.com/YZune/WakeUpSchedule) 开源项目二次开发。
 

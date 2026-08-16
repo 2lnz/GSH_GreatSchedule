@@ -35,7 +35,7 @@
             style="@style/settings_item_tv_main"
             android:text="每节课时长相同" />
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.Azhe.ghs.gshschedule.settings.widget.ThemeSwitch
             android:id="@+id/s_time_same"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

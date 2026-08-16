@@ -27,7 +27,8 @@ data class TodayWidgetCourse(
 
 data class TodayWidgetData(
     @SerializedName("semesterName") val semesterName: String,
-    @SerializedName("courses") val courses: List<TodayWidgetCourse>
+    @SerializedName("courses") val courses: List<TodayWidgetCourse>,
+    @SerializedName("semesterEnded") val semesterEnded: Boolean = false
 )
 
 /**
@@ -114,7 +115,8 @@ object TodayWidgetDataManager {
                 ))
             }
 
-            val data = TodayWidgetData(semesterName = semesterName, courses = courses)
+            val semesterEnded = week > table.maxWeek
+            val data = TodayWidgetData(semesterName = semesterName, courses = courses, semesterEnded = semesterEnded)
             storeData(context, data)
             data
         } catch (_: Exception) { null }

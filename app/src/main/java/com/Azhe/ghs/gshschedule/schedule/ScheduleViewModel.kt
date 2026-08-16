@@ -44,6 +44,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
 
     var table: TableBean by mutableStateOf(TableBean(id = 0, tableName = ""))
     var timeList: List<TimeDetailBean> by mutableStateOf(emptyList())
+    var showTimeDetail by mutableStateOf(true)
     var dataVersion by mutableIntStateOf(0)
     var selectedWeek by mutableIntStateOf(1)
     val marTop = application.resources.getDimensionPixelSize(R.dimen.weekItemMarTop)
