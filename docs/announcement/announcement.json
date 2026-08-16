@@ -49,5 +49,17 @@
     "endTime": "",
     "_note": "时间格式是yyyy-mm-dd 00:00",
     "link": "https://gsh.2lnz.top/"
+  },
+  {
+    "id": 6,
+    "title": "修复了已知bug,增加了未知bug",
+    "content": "修复了分享页面文字居左的问题\n修复了节数栏显示时间无效的bug\n修复了假期时小组件不显示学期结束了的bug\n删除高级功能的空壳且将自定义主题开放",
+    "type": "once",
+    "_note": "通知次数为once和every",
+    "startTime": "",
+    "endTime": "",
+    "_note": "时间格式是yyyy-mm-dd 00:00",
+    "link": "https://gsh.2lnz.top/"
   }
+
 ]
