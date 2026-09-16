@@ -52,6 +52,21 @@ class ScheduleActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        // 重新计算当前周：App 长时间留在后台、跨周后再打开时，
+        // 自动切回本周课表（而不是停留在上次打开时的周数）。
+        // 首次启动时 table 尚未加载（id == 0），由 initView() 负责计算，这里跳过。
+        launch {
+            if (viewModel.table.id != 0) {
+                try {
+                    val newWeek = CourseUtils.countWeek(viewModel.table.startDate, viewModel.table.sundayFirst)
+                    if (newWeek != viewModel.currentWeek) {
+                        viewModel.currentWeek = newWeek
+                        viewModel.selectedWeek = newWeek
+                    }
+                } catch (_: Exception) {
+                }
+            }
+        }
         // IMPORTANT: invalidate card-state cache BEFORE incrementing dataVersion.
         // LaunchedEffect runs its block AFTER composition, so if we only invalidate
         // there, ScheduleGrid would read the stale cache during the recomposition

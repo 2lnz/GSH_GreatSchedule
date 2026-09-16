@@ -33,6 +33,10 @@ object AnnouncementManager {
     private const val DEFAULT_JSON_URL =
         "https://2lnz.github.io/GSH_GreatSchedule/announcement/announcement.json"
 
+    /** 备用地址 — GitHub Raw（主地址被运营商封堵/劫持时使用） */
+    private const val FALLBACK_JSON_URL =
+        "https://raw.githubusercontent.com/2lnz/GSH_GreatSchedule/main/docs/announcement/announcement.json"
+
     /** SharedPreferences 中存储已读 ID 集合的 key */
     private const val PREF_READ_IDS = "announcement_read_ids"
 
@@ -113,7 +117,7 @@ object AnnouncementManager {
 
     // ── 内部实现 ────────────────────────────────────────────────
 
-    /** 从网络拉取 JSON 并过滤有效期，优先使用缓存 */
+    /** 从网络拉取 JSON 并过滤有效期，优先使用缓存；主地址失败时自动切换备用地址 */
     private suspend fun fetchValidAnnouncements(context: Context): List<AnnouncementBean> {
         // 缓存命中直接返回
         val cached = cachedAnnouncements
@@ -123,29 +127,40 @@ object AnnouncementManager {
 
         return withContext(Dispatchers.IO) {
             try {
-                val json = fetchJson(DEFAULT_JSON_URL)
-                val list: List<AnnouncementBean> = gson.fromJson(
-                    json,
-                    object : TypeToken<List<AnnouncementBean>>() {}.type
-                )
-                val now = Date()
-                val valid = list.filter { bean ->
-                    val start = tryParseDate(bean.startTime)
-                    val end   = tryParseDate(bean.endTime)
-                    (start == null || !now.before(start)) &&
-                    (end   == null || !now.after(end))
+                try {
+                    fetchAndCache(DEFAULT_JSON_URL)
+                } catch (e: Exception) {
+                    // 主地址失败（运营商封堵 Pages IP、返回劫持页面等）— 切换 GitHub Raw 备用地址
+                    e.printStackTrace()
+                    fetchAndCache(FALLBACK_JSON_URL)
                 }
-                // 更新内存缓存
-                cachedAnnouncements = valid
-                cacheTimestamp = System.currentTimeMillis()
-                valid
             } catch (e: Exception) {
-                // 静默失败 — 不影响 App 正常启动
+                // 两个地址都失败 — 静默失败，不影响 App 正常启动
                 e.printStackTrace()
-                // 如果有旧缓存（过期但可用），返回旧数据作为降级
-                cachedAnnouncements ?: emptyList()
             }
+            // 有旧缓存（过期但可用）则返回旧数据作为降级
+            cachedAnnouncements ?: emptyList()
         }
+    }
+
+    /** 拉取 JSON、解析并按有效期过滤，成功后更新内存缓存 */
+    private fun fetchAndCache(url: String): List<AnnouncementBean> {
+        val json = fetchJson(url)
+        val list: List<AnnouncementBean> = gson.fromJson(
+            json,
+            object : TypeToken<List<AnnouncementBean>>() {}.type
+        )
+        val now = Date()
+        val valid = list.filter { bean ->
+            val start = tryParseDate(bean.startTime)
+            val end   = tryParseDate(bean.endTime)
+            (start == null || !now.before(start)) &&
+            (end   == null || !now.after(end))
+        }
+        // 更新内存缓存
+        cachedAnnouncements = valid
+        cacheTimestamp = System.currentTimeMillis()
+        return valid
     }
 
     /** OkHttp GET 请求，返回响应体字符串 */

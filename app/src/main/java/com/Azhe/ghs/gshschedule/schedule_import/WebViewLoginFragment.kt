@@ -38,6 +38,9 @@ class WebViewLoginFragment : BaseFragment() {
     private lateinit var url: String
     private val viewModel by activityViewModels<ImportViewModel>()
     private var isRefer = false
+    // HTTPS 打不开时自动降级 HTTP 的目标教务主机（成都银杏酒店管理学院），只降级一次避免循环
+    private val httpFallbackHost = "jwxt.gingkoc.edu.cn"
+    private var httpFallbackUsed = false
     private val hostRegex = Regex("""(http|https)://.*?/""")
     private var tips = "1. 在上方输入教务网址，部分学校需要连接校园网\n2. 登录后点击到个人课表的页面，注意选择自己需要导入的学期\n3. 点击右下角的按钮完成导入\n4. 如果遇到总是提示密码错误或者网页错位等问题，可以取消底栏的「电脑模式」或者调节字体缩放"
     private var zoom = 100
@@ -129,6 +132,20 @@ class WebViewLoginFragment : BaseFragment() {
                         }
                         .setCancelable(false)
                         .show()
+            }
+
+            override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
+                super.onReceivedError(view, request, error)
+                // HTTPS 主页面打不开时（运营商封堵/连接超时等），自动切换到 HTTP 备用链接
+                if (!httpFallbackUsed && request.isForMainFrame &&
+                        request.url.host == httpFallbackHost &&
+                        request.url.toString().startsWith("https://")) {
+                    httpFallbackUsed = true
+                    val httpUrl = request.url.toString().replaceFirst("https://", "http://")
+                    binding.etUrl.setText(httpUrl)
+                    Toasty.warning(requireContext(), "HTTPS 无法访问，已自动切换到 HTTP 备用链接").show()
+                    view.loadUrl(httpUrl)
+                }
             }
 
         }
