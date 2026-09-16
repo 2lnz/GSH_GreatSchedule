@@ -67,7 +67,7 @@
     "content": "修复了在主页和小组件无法自动更新周数的bug\n增加了银杏学院http备用访问路线\n增加公告获取路径防止dns污染",
     "type": "once",
     "_note": "通知次数为once和every",
-    "startTime": "2026-09-14 00:00",
+    "startTime": "",
     "endTime": "",
     "_note": "时间格式是yyyy-mm-dd 00:00",
     "link": "https://gsh.2lnz.top/"
