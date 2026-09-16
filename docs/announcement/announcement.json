@@ -62,7 +62,7 @@
     "link": "https://gsh.2lnz.top/"
   },
   {
-    "id": 6,
+    "id": 7,
     "title": "优化日常使用体验,并推出v1.0.4_beta",
     "content": "修复了在主页和小组件无法自动更新周数的bug\n增加了银杏学院http备用访问路线\n增加公告获取路径防止dns污染",
     "type": "once",
