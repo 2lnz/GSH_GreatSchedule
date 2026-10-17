@@ -75,7 +75,7 @@
   {
     "id": 8,
     "title": "优化日常交互体验,并推出v1.0.5_beta",
-    "content": "更换为 release 构建（仍使用 debug 证书签名，可直接覆盖安装），消除 debug 包不走编译优化导致的高耗时\n- APK 体积由约 25MB 降至 12.8MB,削减不常用功能\n课程卡片排版调整",
+    "content": "更换为 release 构建，消除 debug 包不走编译优化导致的高耗时\n- APK 体积由约 25MB 降至 12.8MB,削减不常用功能\n课程卡片排版调整",
     "type": "once",
     "_note": "通知次数为once和every",
     "startTime": "2026-09-14 00:00",

@@ -3,148 +3,389 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="下载 GSH课程表 Android 版 v1.0.1-beta：免费、无广告、开源。支持直连下载、123云盘与 GitHub Release，附完整更新日志。">
+  <meta name="theme-color" content="#04182c">
+  <meta name="description" content="下载 GSH课程表 Android 版 v1.0.5-beta：免费、无广告、开源。支持直连下载、123云盘与 GitHub Release，附完整更新日志。">
   <meta property="og:title" content="下载 GSH课程表 — Android 版">
   <meta property="og:description" content="免费无广告的课表助手，支持直连下载、123云盘与 GitHub Release。">
   <meta property="og:image" content="https://gsh.2lnz.top/assets/logo.webp">
   <meta property="og:type" content="website">
-  <title>下载 GSH课程表 — Android 版 v1.0.1-beta</title>
+  <title>下载 GSH课程表 — Android 版 v1.0.5-beta</title>
   <link rel="canonical" href="https://gsh.2lnz.top/download.html">
   <link rel="icon" type="image/webp" href="assets/logo.webp">
+  <link rel="preload" href="assets/logo.webp" as="image">
   <link rel="preload" href="css/style.css" as="style">
   <link rel="stylesheet" href="css/style.css">
-  <style>html { scroll-snap-type: none; }</style>
+  <script>document.documentElement.classList.add('js');</script>
+  <noscript><style>.faq-a{max-height:none}.page-loader{display:none!important}body.is-loading{overflow:auto!important}</style></noscript>
 </head>
-<body>
+<body class="is-loading">
 
-  <!-- Navigation -->
-  <nav class="nav" id="nav">
-    <a href="index.html" class="nav-brand">
-      <img src="assets/logo.webp" alt="GSH" class="nav-logo-img" width="32" height="32">
-      <span>GSH课程表</span>
-    </a>
-    <div class="nav-links" id="navLinks">
-      <a href="index.html">首页</a>
-      <a href="about.html">介绍</a>
-      <a href="index.html#features-1">核心功能</a>
-      <a href="index.html#screenshots">截图</a>
-      <a href="index.html#qa">Q&amp;A</a>
-      <a href="download.html" class="active">下载</a>
-      <a href="index.html#author">关于作者</a>
-    </div>
-    <a href="download.html" class="nav-dl-btn nav-dl-btn-desktop">立即下载</a>
-    <button class="hamburger" id="hamburger" aria-label="菜单">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-  <div class="mobile-nav-overlay" id="mobileOverlay">
-    <div class="mobile-nav-panel">
-      <a href="index.html">首页</a>
-      <a href="about.html">介绍</a>
-      <a href="index.html#features-1">核心功能</a>
-      <a href="index.html#screenshots">截图</a>
-      <a href="index.html#qa">Q&amp;A</a>
-      <a href="download.html">下载</a>
-      <a href="index.html#author">关于作者</a>
-      <a href="download.html" class="mobile-dl-btn">立即下载</a>
+  <div class="page-loader" id="pageLoader" role="status" aria-live="polite" aria-label="页面加载中">
+    <div class="page-loader-inner">
+      <img src="assets/logo.webp" alt="" width="56" height="56">
+      <span class="page-loader-bar" aria-hidden="true"></span>
     </div>
   </div>
 
-  <main>
-    <!-- Download -->
-    <section class="section-padding" style="padding-top:120px;">
+  <a href="#main" class="skip-link">跳到主要内容</a>
+
+  <!-- ===================== Header ===================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <a href="index.html" class="brand" aria-label="GSH课程表首页">
+        <img src="assets/logo.webp" alt="GSH课程表 Logo" width="36" height="36">
+        <span class="brand-text">GSH课程表<small>GREAT SCHEDULE HELPER</small></span>
+      </a>
+
+      <nav class="main-nav" aria-label="主导航">
+        <ul>
+          <li><a href="index.html" class="nav-link">首页</a></li>
+          <li><a href="index.html#screenshots" class="nav-link">应用展示</a></li>
+          <li><a href="index.html#news" class="nav-link">版本动态</a></li>
+          <li><a href="index.html#qa" class="nav-link">常见问题</a></li>
+          <li><a href="index.html#author" class="nav-link">关于我们</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <span class="header-version">v1.0.5-beta</span>
+        <a href="download.html" class="btn-download" aria-current="page">立即下载
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <button class="menu-toggle" id="menuToggle" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <nav aria-label="移动端导航">
+      <a href="index.html"><span>01</span>首页</a>
+      <a href="about.html"><span>02</span>产品介绍</a>
+      <a href="index.html#features"><span>03</span>核心功能</a>
+      <a href="index.html#screenshots"><span>04</span>应用展示</a>
+      <a href="index.html#news"><span>05</span>版本动态</a>
+      <a href="index.html#qa"><span>06</span>常见问题</a>
+      <a href="index.html#author"><span>07</span>关于我们</a>
+      <a href="download.html"><span>08</span>下载</a>
+    </nav>
+    <div class="mobile-menu-foot">
+      <p class="mobile-menu-meta">V1.0.5-BETA · 免费开源 · 无广告</p>
+      <a href="https://apk.2lnz.top/gsh.apk" class="btn btn-blue" target="_blank" rel="noopener">直接下载
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- ===================== Page hero ===================== -->
+    <section class="page-hero">
       <div class="container">
-        <div class="final-download-grid fade-in">
-          <!-- Left: Download -->
-          <div class="download-info">
-            <h1>下载 GSH课程表</h1>
-            <span class="version-badge">v1.0.1-beta</span>
-            <p>
-              支持 Android 平台，约 25 MB。基于 WakeUpSchedule 开源项目二次开发，深度定制。完全免费，无广告。
+        <div class="page-hero-inner">
+          <div>
+            <nav class="breadcrumb" aria-label="面包屑">
+              <a href="index.html">首页</a>
+              <span class="bc-sep">/</span>
+              <span>下载</span>
+            </nav>
+            <p class="hero-eyebrow">Download · 下载</p>
+            <h1>下载 <strong>GSH课程表</strong></h1>
+            <span class="version-badge">v1.0.5-beta</span>
+            <p class="page-hero-desc">
+              支持 Android 平台，约 12.8 MB。基于 WakeUpSchedule 开源项目二次开发，深度定制。完全免费，无广告。
             </p>
-            <div class="download-actions">
-              <a href="https://apk.2lnz.top/%E5%BD%93%E5%89%8D%E7%89%88%E6%9C%AC.apk" class="btn-primary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3m-5 9 5 5 5-5M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/></svg>
+            <div class="page-hero-actions">
+              <a href="https://apk.2lnz.top/gsh.apk" class="btn btn-white" target="_blank" rel="noopener">
                 直接下载（国内首选）
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 4v12m-5-5 5 5 5-5M5 20h14"/></svg>
               </a>
-              <a href="https://gsh.2lnz.top/%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC.apk" class="btn-primary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3m-5 9 5 5 5-5M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/></svg>
-                直接下载（国内备选）
+              <a href="https://github.com/2lnz/GSH_GreatSchedule/releases/latest" class="btn btn-outline-light" target="_blank" rel="noopener">
+                GitHub Release
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </a>
-              <a href="https://home.2lnz.top/%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC.apk" class="btn-secondary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3m-5 9 5 5 5-5M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/></svg>
-                下载（备用）
-              </a>
-              <a href="https://1840645731.share.123865.com/123pan/wdkNTd-t0sP?" class="btn-secondary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-                123云盘下载（提取码mprp）
-              </a>
-              <a href="https://github.com/2lnz/GSH_GreatSchedule/releases/latest" class="btn-secondary" target="_blank" rel="noopener">从 GitHub Release 下载</a>
-              <a href="https://github.com/2lnz/GSH_GreatSchedule/releases" class="btn-secondary" target="_blank" rel="noopener">查看历史版本</a>
-            </div>
-            <div style="margin-top:1.25rem;">
-              <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>更新日志</h3>
-              <ul class="changelog">
-                <li>适配常见教务系统，一键导入课表</li>
-                <li>全面迁移至 Jetpack Compose + Material 3 设计语言</li>
-                <li>替换默认课程时间为常见作息时间（15 节/天，20 周/学期）</li>
-                <li>新增公告推送功能，重要通知不再错过</li>
-                <li>优化桌面小部件，今日课程一目了然</li>
-                <li>默认关闭自动更新检查，减少后台请求</li>
-              </ul>
             </div>
           </div>
-
-          <!-- Right: About -->
-          <div class="download-extras">
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>关于 GSH课程表</h3>
-              <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.7;">
-                GSH课程表（Great Schedule Helper）是一款专为学生打造的课表管理应用。基于 <a href="https://github.com/YZune/WakeUpSchedule" target="_blank" rel="noopener">WakeUpSchedule</a> 开源项目二次开发，适配新版正方教务系统。
-              </p>
-            </div>
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>致谢</h3>
-              <ul class="changelog">
-                <li><strong>WakeUpSchedule</strong> — 原作者 <a href="https://github.com/YZune" target="_blank" rel="noopener">YZune</a>，开源课表框架</li>
-                <li><strong>北邮适配</strong> — <a href="https://github.com/wangxianfei2002" target="_blank" rel="noopener">XIANFEI</a></li>
-                <li><strong>GSH 开发</strong> — <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a>，UI优化与设计，银杏学院适配与 Material 3 迁移</li>
-                <li><strong>银杏学院适配</strong> — <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a></li>
-                <li><strong>早期贡献</strong> — <a href="https://github.com/wangxianfei2002" target="_blank" rel="noopener">XIANFEI</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>技术栈</h3>
-              <div class="tech-tags">
-                <span class="tech-tag">Kotlin</span>
-                <span class="tech-tag">Jetpack Compose</span>
-                <span class="tech-tag">Material 3</span>
-                <span class="tech-tag">Room</span>
-                <span class="tech-tag">Retrofit</span>
-                <span class="tech-tag">OkHttp</span>
-                <span class="tech-tag">MVVM</span>
+          <div class="page-hero-visual">
+            <div class="page-hero-panel">
+              <span class="panel-label">ANDROID · APK</span>
+              <strong>v1.0.5-beta</strong>
+              <p>12.8 MB · 免费开源 · 无广告</p>
+              <div class="panel-bars" aria-hidden="true">
+                <i style="--h:38%"></i>
+                <i style="--h:62%"></i>
+                <i style="--h:86%"></i>
+                <i style="--h:54%"></i>
+                <i style="--h:74%"></i>
+                <i style="--h:48%"></i>
+                <i style="--h:92%"></i>
+                <i style="--h:66%"></i>
               </div>
-            </div>
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>许可证</h3>
-              <p style="color:var(--text-secondary);font-size:0.85rem;">本项目基于 <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a> 开源。</p>
-              <p style="color:var(--text-muted);font-size:0.8rem;">Copyright © 2019 YZune, 2020 xianfei, 2026 2LNZ</p>
             </div>
           </div>
         </div>
-        <div class="cta-container fade-in" style="margin-top:2.5rem;">
-          <a href="about.html" class="btn-secondary">了解功能与常见问题</a>
-          <a href="index.html" class="btn-secondary">返回首页</a>
+      </div>
+    </section>
+
+    <!-- ===================== Download options ===================== -->
+    <section class="dl-options site-section">
+      <div class="container" id="downloads">
+        <div class="section-head" data-reveal>
+          <div>
+            <div class="sec-label"><span>01</span><i></i>DOWNLOAD OPTIONS</div>
+            <h2>选择下载方式</h2>
+          </div>
+          <p>提供多个下载源，均为同一版本。国内访问优先选择直连下载，速度更快。</p>
+        </div>
+
+        <div class="dl-cards">
+          <a class="dl-card" href="https://apk.2lnz.top/gsh.apk" target="_blank" rel="noopener" data-reveal style="--d:.02s">
+            <span class="dl-card-num">01</span>
+            <h3>直接下载（国内首选）</h3>
+            <p>当前版本 APK，国内访问速度最快，推荐优先使用。</p>
+            <span class="arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+
+          <a class="dl-card" href="https://gsh.2lnz.top/gsh.apk" target="_blank" rel="noopener" data-reveal style="--d:.05s">
+            <span class="dl-card-num">02</span>
+            <h3>直接下载（国内备选）</h3>
+            <p>国内备选直连线路，主线路不可用时使用。</p>
+            <span class="arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+
+          <a class="dl-card" href="https://home.2lnz.top/gsh.apk" target="_blank" rel="noopener" data-reveal style="--d:.08s">
+            <span class="dl-card-num">03</span>
+            <h3>下载（备用）</h3>
+            <p>备用下载节点，适合前两个线路都无法访问的情况。</p>
+            <span class="arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+
+          <a class="dl-card" href="https://1840645731.share.123865.com/123pan/wdkNTd-t0sP?" target="_blank" rel="noopener" data-reveal style="--d:.02s">
+            <span class="dl-card-num">04</span>
+            <h3>123 云盘下载</h3>
+            <p>通过 123 云盘获取安装包，提取码：mprp。</p>
+            <span class="arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+
+          <a class="dl-card" href="https://github.com/2lnz/GSH_GreatSchedule/releases/latest" target="_blank" rel="noopener" data-reveal style="--d:.05s">
+            <span class="dl-card-num">05</span>
+            <h3>从 GitHub Release 下载</h3>
+            <p>获取最新版本 APK 与完整发布说明，适合海外访问。</p>
+            <span class="arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+
+          <a class="dl-card" href="https://github.com/2lnz/GSH_GreatSchedule/releases" target="_blank" rel="noopener" data-reveal style="--d:.08s">
+            <span class="dl-card-num">06</span>
+            <h3>查看历史版本</h3>
+            <p>回退或查阅过往版本，包含每个版本的发布记录。</p>
+            <span class="arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Changelog ===================== -->
+    <section class="changelog-section site-section">
+      <div class="container" id="changelog">
+        <div class="changelog-layout">
+          <aside class="version-panel" data-reveal>
+            <div class="sec-label"><span>02</span><i></i>CHANGELOG</div>
+            <h2>更新日志</h2>
+            <span class="version-badge">v1.0.5-beta</span>
+            <p>最近更新：2026.09.14。查看 GitHub Releases 获取完整的版本发布记录。</p>
+            <a href="https://github.com/2lnz/GSH_GreatSchedule/releases" class="text-link" target="_blank" rel="noopener">GitHub Releases
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </aside>
+
+          <div data-reveal style="--d:.06s">
+            <article class="release">
+              <div class="release-head">
+                <h3>v1.0.5-beta</h3>
+                <span>2026.09.14</span>
+              </div>
+              <ul class="check-list">
+                <li>更换为 release 构建（仍使用 debug 证书签名，可直接覆盖安装），消除 debug 包不走编译优化导致的高耗时。</li>
+                <li>修复主页左右滑动切换周次时卡顿、滑动起步明显掉帧的问题；滑动时主线程单帧耗时中位数由约 9ms 降至 1.3ms，换周首帧由约 240ms 降至 30ms 以内。</li>
+                <li>APK 体积由约 25MB 降至 12.8MB。</li>
+                <li>课程卡片排版调整：课程名最多四行；教室、教师各占一行，教室优先显示教室号。</li>
+                <li>移除卡片上的单双周文字标识，非本周课程仍以降低透明度区分。</li>
+              </ul>
+            </article>
+
+            <article class="release">
+              <div class="release-head">
+                <h3>早期版本更新</h3>
+                <span>v1.0.1 – v1.0.4-beta</span>
+              </div>
+              <ul class="check-list">
+                <li>适配常见教务系统，一键导入课表。</li>
+                <li>全面迁移至 Jetpack Compose + Material 3 设计语言。</li>
+                <li>替换默认课程时间为常见作息时间（15 节/天，20 周/学期）。</li>
+                <li>新增公告推送功能，重要通知不再错过。</li>
+                <li>优化桌面小部件，今日课程一目了然。</li>
+                <li>默认关闭自动更新检查，减少后台请求。</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== About / credits / tech / license ===================== -->
+    <section class="info-section">
+      <div class="container" id="about-app">
+        <div class="section-head" data-reveal>
+          <div>
+            <div class="sec-label"><span>03</span><i></i>MORE INFO</div>
+            <h2>关于与致谢</h2>
+          </div>
+          <p>开放、透明、可追溯。GSH课程表建立在前人的开源工作之上。</p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-card" data-reveal>
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+              关于 GSH课程表
+            </h3>
+            <p>
+              GSH课程表（Great Schedule Helper）是一款专为学生打造的课表管理应用。基于 <a href="https://github.com/YZune/WakeUpSchedule" target="_blank" rel="noopener">WakeUpSchedule</a> 开源项目二次开发，适配新版正方教务系统。
+            </p>
+          </div>
+
+          <div class="info-card" data-reveal style="--d:.05s">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+              致谢
+            </h3>
+            <ul class="check-list">
+              <li><strong>WakeUpSchedule</strong> — 原作者 <a href="https://github.com/YZune" target="_blank" rel="noopener">YZune</a>，开源课表框架</li>
+              <li><strong>北邮适配</strong> — <a href="https://github.com/wangxianfei2002" target="_blank" rel="noopener">XIANFEI</a></li>
+              <li><strong>GSH 开发</strong> — <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a>，UI 优化与设计，银杏学院适配与 Material 3 迁移</li>
+              <li><strong>银杏学院适配</strong> — <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a></li>
+              <li><strong>早期贡献</strong> — <a href="https://github.com/wangxianfei2002" target="_blank" rel="noopener">XIANFEI</a></li>
+            </ul>
+          </div>
+
+          <div class="info-card" data-reveal>
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/></svg>
+              技术栈
+            </h3>
+            <div class="tech-tags">
+              <span class="tech-tag">Kotlin</span>
+              <span class="tech-tag">Jetpack Compose</span>
+              <span class="tech-tag">Material 3</span>
+              <span class="tech-tag">Room</span>
+              <span class="tech-tag">Retrofit</span>
+              <span class="tech-tag">OkHttp</span>
+              <span class="tech-tag">MVVM</span>
+            </div>
+          </div>
+
+          <div class="info-card" data-reveal style="--d:.05s">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+              许可证
+            </h3>
+            <p>本项目基于 <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a> 开源。</p>
+            <p class="license-note">Copyright © 2019 YZune, 2020 xianfei, 2026 2LNZ</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CTA ===================== -->
+    <section class="about-cta">
+      <div class="container">
+        <div class="cta-strip" data-reveal>
+          <div>
+            <h2>还想了解更多？<br><strong>看看产品介绍与常见问题</strong></h2>
+            <p>了解核心功能、应用截图与使用答疑，然后再开始你的 GSH 之旅。</p>
+          </div>
+          <div class="cta-actions">
+            <a href="about.html" class="btn btn-blue">了解功能与常见问题
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="index.html" class="btn btn-outline-dark">返回首页
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>© 2026 GSH课程表 · Apache License 2.0</p>
-    <p><a href="about.html">介绍</a> · <a href="download.html">下载</a> · <a href="index.html">首页</a></p>
+  <!-- ===================== Footer ===================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">
+            <img src="assets/logo.webp" alt="GSH课程表 Logo" width="34" height="34">
+            <span class="brand-text">GSH课程表<small>GREAT SCHEDULE HELPER</small></span>
+          </a>
+          <p>Great Schedule Helper<br>专为学生打造的课表管理应用。完全免费，无广告，开源可拓展。</p>
+          <div class="footer-social">
+            <a href="https://github.com/2lnz" aria-label="GitHub" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://blog.2lnz.top" aria-label="博客" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>产品</h4>
+          <a href="about.html">产品介绍</a>
+          <a href="index.html#features">核心功能</a>
+          <a href="index.html#screenshots">应用截图</a>
+          <a href="index.html#news">版本动态</a>
+        </div>
+        <div class="footer-col">
+          <h4>支持</h4>
+          <a href="index.html#qa">常见问题</a>
+          <a href="download.html">下载应用</a>
+          <a href="download.html#changelog">更新日志</a>
+          <a href="index.html#author">关于作者</a>
+        </div>
+        <div class="footer-col">
+          <h4>资源</h4>
+          <a href="https://github.com/2lnz/GSH_GreatSchedule" target="_blank" rel="noopener">GitHub 仓库</a>
+          <a href="https://github.com/2lnz/GSH_GreatSchedule/releases" target="_blank" rel="noopener">历史版本</a>
+          <a href="https://github.com/YZune/WakeUpSchedule" target="_blank" rel="noopener">WakeUpSchedule</a>
+          <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a>
+        </div>
+      </div>
+
+      <div class="footer-wordmark" aria-hidden="true">GSH</div>
+
+      <div class="footer-bottom">
+        <p>© 2026 GSH课程表 · Apache License 2.0</p>
+        <p>Copyright © 2019 YZune, 2020 xianfei, 2026 2LNZ</p>
+        <p>Powered by <span class="footer-heart">♥</span> · Made with <span class="footer-heart">♥</span> by <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a></p>
+      </div>
+    </div>
   </footer>
+
+  <button class="to-top" aria-label="回到顶部">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+  </button>
 
   <script src="js/main.js" defer></script>
 </body>

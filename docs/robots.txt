@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://gsh.2lnz.top/sitemap.xml

@@ -3,15 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#04182c">
   <meta name="description" content="GSH课程表 — Great Schedule Helper，你的课表助手。一键导入课表，Material 3 设计，轻量省电。">
   <meta property="og:title" content="GSH课程表 — Great Schedule Helper">
   <meta property="og:description" content="你的课表助手，一键导入，Material 3 设计，轻量省电。">
   <meta property="og:image" content="https://gsh.2lnz.top/assets/logo.webp">
   <meta property="og:url" content="https://gsh.2lnz.top/">
   <meta property="og:type" content="website">
-  <title>GSH课程表 — Great Schedule</title>
+  <title>GSH课程表 — Great Schedule Helper | 化繁为简，触手可及</title>
   <link rel="canonical" href="https://gsh.2lnz.top/">
   <link rel="icon" type="image/webp" href="assets/logo.webp">
+  <link rel="preload" href="assets/logo.webp" as="image">
+  <link rel="preload" href="css/style.css" as="style">
+  <link rel="stylesheet" href="css/style.css">
+  <script>document.documentElement.classList.add('js');</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -21,380 +26,522 @@
     "url": "https://gsh.2lnz.top/",
     "operatingSystem": "Android",
     "applicationCategory": "EducationalApplication",
-    "softwareVersion": "1.0.1-beta",
+    "softwareVersion": "1.0.5-beta",
     "description": "GSH课程表（Great Schedule Helper）是一款专为学生打造的课表管理应用。一键导入、Material 3 设计、桌面小部件，完全免费开源。",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
     "author": { "@type": "Person", "name": "2LNZ", "url": "https://github.com/2lnz" },
     "license": "https://www.apache.org/licenses/LICENSE-2.0"
   }
   </script>
-  <!-- Preconnect to external origins -->
-  <link rel="preconnect" href="https://apk.2lnz.top">
-  <link rel="preconnect" href="https://gsh.2lnz.top">
-  <link rel="preconnect" href="https://home.2lnz.top">
-  <!-- Preload critical resources -->
-  <link rel="preload" href="assets/logo.webp" as="image">
-  <link rel="preload" href="css/style.css" as="style">
-  <link rel="stylesheet" href="css/style.css">
+  <noscript><style>.faq-a{max-height:none}.page-loader{display:none!important}body.is-loading{overflow:auto!important}</style></noscript>
 </head>
-<body>
+<body class="is-loading">
 
-  <!-- Loading Screen -->
-  <div class="loader" id="loader">
-    <div class="loader-content">
-      <span class="loader-text">Welcome<br>Greater Schedule</span>
-    </div>
-  </div>
-  <script>
-    // Inline loader — hide as soon as text reveal animation finishes
-    (function(){
-      var l = document.getElementById('loader');
-      var done = false;
-      function hide() {
-        if (done || !l) return;
-        done = true;
-        l.classList.add('hidden');
-        document.body.style.overflow = '';
-        setTimeout(function(){ if (l.parentNode) l.parentNode.removeChild(l); }, 600);
-      }
-      // Hide when text reveal animation completes, or 2s fallback
-      var text = document.querySelector('.loader-text');
-      if (text) text.addEventListener('animationend', function(){ setTimeout(hide, 200); });
-      setTimeout(hide, 2000);
-    })();
-  </script>
-
-  <!-- Navigation -->
-  <nav class="nav" id="nav">
-    <a href="#hero-text" class="nav-brand">
-      <img src="assets/logo.webp" alt="GSH" class="nav-logo-img" width="32" height="32">
-      <span>GSH课程表</span>
-    </a>
-    <div class="nav-links" id="navLinks">
-      <a href="#hero-text" class="active">首页</a>
-      <a href="#about">介绍</a>
-      <a href="#features-1">核心功能</a>
-      <a href="#screenshots">截图</a>
-      <a href="#qa">Q&amp;A</a>
-      <a href="#download-about">下载</a>
-      <a href="#author">关于作者</a>
-    </div>
-    <a href="#download-about" class="nav-dl-btn nav-dl-btn-desktop">立即下载</a>
-    <button class="hamburger" id="hamburger" aria-label="菜单">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
-  <div class="mobile-nav-overlay" id="mobileOverlay">
-    <div class="mobile-nav-panel">
-      <a href="#hero-text">首页</a>
-      <a href="#about">介绍</a>
-      <a href="#features-1">核心功能</a>
-      <a href="#screenshots">截图</a>
-      <a href="#qa">Q&amp;A</a>
-      <a href="#download-about">下载</a>
-      <a href="#author">关于作者</a>
-      <a href="#download-about" class="mobile-dl-btn">立即下载</a>
+  <div class="page-loader" id="pageLoader" role="status" aria-live="polite" aria-label="页面加载中">
+    <div class="page-loader-inner">
+      <img src="assets/logo.webp" alt="" width="56" height="56">
+      <span class="page-loader-bar" aria-hidden="true"></span>
     </div>
   </div>
 
-  <main>
-    <!-- ====== Page 1: Hero Text ====== -->
-    <section id="hero-text" class="hero-text">
-      <div class="container">
-        <h1><span class="gradient-text">GSH课程表</span></h1>
-        <h2>重新定义校园课表体验</h2>
-        <p>
-          GSH课程表（Great Schedule Helper）是一款专为学生打造的课表管理应用。一键导入、Material 3 设计、桌面小部件，让你的校园生活井然有序。
-        </p>
-        <div class="cta-container">
-          <a href="#download-about" class="btn-primary">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 17V3m-5 9 5 5 5-5M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/>
-            </svg>
-            立即获取 Android 版
-          </a>
-          <a href="#features-1" class="btn-secondary">查看功能</a>
-        </div>
-        <span class="hero-version">v1.0.4-beta · 免费开源</span>
-      </div>
-    </section>
+  <a href="#main" class="skip-link">跳到主要内容</a>
 
-    <!-- ====== Page 2: Hero Visual ====== -->
-    <section id="hero-visual" class="hero-visual-section">
-      <div class="container">
-        <div class="hero-visual">
-          <img src="assets/logo.webp" alt="GSH" class="hero-logo-large" width="110" height="110" fetchpriority="high">
-          <div class="feature-badge badge-1">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6M12 9v6"/></svg>
-            一键导入
-          </div>
-          <div class="feature-badge badge-2">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
-            Material 3
-          </div>
-          <div class="feature-badge badge-3">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h8l-2 8 10-14h-8l2-8z"/></svg>
-            轻量省电
-          </div>
-          <div class="feature-badge badge-4">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/></svg>
-            桌面小部件
-          </div>
-          <div class="feature-badge badge-5">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            完全免费
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- ===================== Header ===================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <a href="index.html" class="brand" aria-label="GSH课程表首页">
+        <img src="assets/logo.webp" alt="GSH课程表 Logo" width="36" height="36">
+        <span class="brand-text">GSH课程表<small>GREAT SCHEDULE HELPER</small></span>
+      </a>
 
-    <!-- ====== Page 3: About / 介绍 ====== -->
-    <section id="about" class="section-padding fade-in">
-      <div class="container">
-        <div class="about-grid">
-          <div>
-            <h3>化繁为简，触手可及</h3>
-            <p>
-              GSH课程表基于开源软件二次开发优化,支持一键导入课表、单双周自动识别、桌面小部件、深色模式等核心功能，让课表管理从未如此简单。
-            </p>
-            <div class="about-stats">
-              <div>
-                <div class="stat-value blue">15节/天</div>
-                <div class="stat-label">作息适配</div>
+      <nav class="main-nav" aria-label="主导航">
+        <ul>
+          <li><a href="index.html" class="nav-link is-active" aria-current="page">首页</a></li>
+          <li><a href="#screenshots" class="nav-link">应用展示</a></li>
+          <li><a href="#news" class="nav-link">版本动态</a></li>
+          <li><a href="#qa" class="nav-link">常见问题</a></li>
+          <li><a href="#author" class="nav-link">关于我们</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <span class="header-version">v1.0.5-beta</span>
+        <a href="download.html" class="btn-download">立即下载
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <button class="menu-toggle" id="menuToggle" aria-label="打开菜单" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <nav aria-label="移动端导航">
+      <a href="index.html"><span>01</span>首页</a>
+      <a href="about.html"><span>02</span>产品介绍</a>
+      <a href="#features"><span>03</span>核心功能</a>
+      <a href="#screenshots"><span>04</span>应用展示</a>
+      <a href="#news"><span>05</span>版本动态</a>
+      <a href="#qa"><span>06</span>常见问题</a>
+      <a href="#author"><span>07</span>关于我们</a>
+      <a href="download.html"><span>08</span>下载</a>
+    </nav>
+    <div class="mobile-menu-foot">
+      <p class="mobile-menu-meta">V1.0.5-BETA · 免费开源 · 无广告</p>
+      <a href="download.html" class="btn btn-blue">立即下载
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- ===================== Hero ===================== -->
+    <section class="hero" aria-label="首页轮播">
+      <div class="container hero-container">
+        <div class="hero-slides">
+
+          <!-- Slide 1 -->
+          <article class="hero-slide is-active" data-slide="0" aria-hidden="false">
+            <div class="hero-copy">
+              <p class="hero-eyebrow">Great Schedule Helper</p>
+              <h1 class="hero-title">化繁为简<br>想象变为现实</h1>
+              <p class="hero-desc">
+                GSH课程表（Great Schedule Helper）是一款专为学生打造的课表管理应用。一键导入、Material 3 设计、桌面小部件，让你的校园生活井然有序。
+              </p>
+              <div class="hero-actions">
+                <a href="download.html" class="btn btn-white">立即获取 Android 版
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <a href="#features" class="text-link text-link--light">查看核心功能
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
               </div>
-              <div>
-                <div class="stat-value green">0</div>
-                <div class="stat-label">广告</div>
-              </div>
-              <div>
-                <div class="stat-value yellow">100%</div>
-                <div class="stat-label">免费开源</div>
-              </div>
+              <p class="hero-note">v1.0.5-beta · 免费开源 · 无广告</p>
             </div>
-          </div>
-          <div class="about-phone-mockup">
-            <div class="phone-frame">
-              <div class="phone-screen-header">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <img src="assets/logo.webp" alt="" class="app-icon-sm" width="22" height="22" loading="lazy">
-                  <span>GSH课程表</span>
-                </div>
-                <div class="phone-screen-dots">
-                  <div></div><div></div>
+
+            <div class="hero-visual">
+              <div class="device-main">
+                <img src="assets/001.webp" alt="GSH课程表 课表周视图" width="1220" height="2712" fetchpriority="high">
+              </div>
+              <div class="device-sub">
+                <img src="assets/002.webp" alt="GSH课程表 桌面小部件" width="1220" height="2712">
+              </div>
+              <div class="float-card fc-1">
+                <div>
+                  <strong>今日课程</strong>
+                  <span>第 8 周 周二 · 4 节课</span>
                 </div>
               </div>
-              <div class="phone-schedule-card">
-                <div class="card-header">
-                  <span>今日课程 (第 8 周 周二)</span>
-                  <span class="badge">4 节课</span>
-                </div>
-                <div style="display:flex;gap:4px;height:30px;align-items:flex-end;margin-bottom:10px;">
-                  <div style="flex:1;height:60%;background:#3B82F6;border-radius:2px;opacity:0.8;"></div>
-                  <div style="flex:1;height:90%;background:#3B82F6;border-radius:2px;"></div>
-                  <div style="flex:1;height:40%;background:#3B82F6;border-radius:2px;opacity:0.6;"></div>
-                  <div style="flex:1;height:80%;background:#3B82F6;border-radius:2px;"></div>
-                  <div style="flex:1;height:55%;background:#3B82F6;border-radius:2px;opacity:0.7;"></div>
-                  <div style="flex:1;height:95%;background:#0D9488;border-radius:2px;"></div>
-                  <div style="flex:1;height:30%;background:#3B82F6;border-radius:2px;opacity:0.5;"></div>
-                  <div style="flex:1;height:75%;background:#3B82F6;border-radius:2px;"></div>
-                </div>
-                <div class="phone-schedule-row">
-                  <div>
-                    <p>当前</p>
-                    <p style="color:#0D9488;">第3节</p>
-                  </div>
-                  <div>
-                    <p>教室</p>
-                    <p>A1145</p>
-                  </div>
-                  <div>
-                    <p>课程</p>
-                    <p style="color:#3B82F6;">形势与政策</p>
-                  </div>
-                </div>
-              </div>
-              <div class="phone-quick-actions">
-                <div class="phone-quick-action">
-                  <div class="dot dot-green"></div>
-                  <span>一键导入</span>
+              <div class="float-card fc-2">
+                <div>
+                  <strong>一键导入</strong>
                   <span>已同步教务系统</span>
                 </div>
-                <div class="phone-quick-action">
-                  <div class="dot dot-yellow"></div>
-                  <span>深色模式</span>
-                  <span>自动跟随系统</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Slide 2 -->
+          <article class="hero-slide" data-slide="1" aria-hidden="true">
+            <div class="hero-copy">
+              <p class="hero-eyebrow">One-click Import</p>
+              <h2 class="hero-title">一键导入<br>告别手动录入</h2>
+              <p class="hero-desc">
+                支持常见教务系统，登录即自动同步学期课程，无需手动录入。单双周自动识别，作息时间完美匹配常见学院 15 节/天的节奏。
+              </p>
+              <div class="hero-actions">
+                <a href="#features" class="btn btn-white">探索核心功能
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <a href="download.html" class="text-link text-link--light">立即下载
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+              </div>
+              <p class="hero-note">支持常见教务系统 · 单双周自动识别</p>
+            </div>
+
+            <div class="hero-visual">
+              <div class="device-main">
+                <img src="assets/002.webp" alt="GSH课程表 桌面小部件展示" width="1220" height="2712" loading="lazy">
+              </div>
+              <div class="device-sub">
+                <img src="assets/001.webp" alt="GSH课程表 课表周视图" width="1220" height="2712" loading="lazy">
+              </div>
+              <div class="float-card fc-1">
+                <div>
+                  <strong>单双周识别</strong>
+                  <span>学期课程自动同步</span>
                 </div>
               </div>
-              <div class="phone-bottom-nav">
-                <div class="active"></div>
-                <div></div>
-                <div></div>
-                <div></div>
+              <div class="float-card fc-2">
+                <div>
+                  <strong>15 节 / 天</strong>
+                  <span>常见学院作息适配</span>
+                </div>
               </div>
+            </div>
+          </article>
+
+          <!-- Slide 3 -->
+          <article class="hero-slide" data-slide="2" aria-hidden="true">
+            <div class="hero-copy">
+              <p class="hero-eyebrow">Open Source · Free Forever</p>
+              <h2 class="hero-title">重新定义<br><span class="hero-title-accent">校园课表体验</span></h2>
+              <p class="hero-desc">
+                Material 3 现代化设计，深色模式随心切换。100% 免费开源，无广告、无后台驻留，轻量省电，让课表管理从未如此简单。
+              </p>
+              <div class="hero-actions">
+                <a href="download.html" class="btn btn-white">立即下载
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <a href="#screenshots" class="text-link text-link--light">查看应用截图
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+              </div>
+              <p class="hero-note">Apache License 2.0 · 欢迎贡献</p>
+            </div>
+
+            <div class="hero-visual">
+              <div class="logo-orbit">
+                <span class="orbit-ring r1" aria-hidden="true"></span>
+                <span class="orbit-ring r2" aria-hidden="true"></span>
+                <span class="orbit-ring r3" aria-hidden="true"></span>
+                <img src="assets/logo.webp" alt="GSH课程表" class="orbit-logo" width="138" height="138" loading="lazy">
+                <span class="orbit-badge ob-1">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 14.9A6 6 0 0 1 7.5 4a6 6 0 0 1 11 2.5A4.5 4.5 0 0 1 18 15"/><path d="M12 11v8m-3-3 3 3 3-3"/></svg>
+                  一键导入
+                </span>
+                <span class="orbit-badge ob-2">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg>
+                  Material 3
+                </span>
+                <span class="orbit-badge ob-3">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
+                  轻量省电
+                </span>
+                <span class="orbit-badge ob-4">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                  桌面小部件
+                </span>
+                <span class="orbit-badge ob-5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+                  完全免费
+                </span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <div class="hero-foot">
+        <div class="container hero-foot-inner">
+          <div class="hero-dots" aria-label="首页轮播导航">
+            <button type="button" class="hero-dot is-active" aria-current="true" aria-label="第 1 张：化繁为简，想象变为现实" data-slide="0"></button>
+            <button type="button" class="hero-dot" aria-current="false" aria-label="第 2 张：一键导入，告别手动录入" data-slide="1"></button>
+            <button type="button" class="hero-dot" aria-current="false" aria-label="第 3 张：重新定义校园课表体验" data-slide="2"></button>
+          </div>
+          <div class="hero-controls">
+            <p class="hero-pager" aria-hidden="true"><b>01</b><span class="sep">/</span><span>03</span></p>
+            <div class="hero-arrows">
+              <button type="button" class="hero-arrow hero-arrow--prev" aria-label="上一张">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+              </button>
+              <button type="button" class="hero-arrow hero-arrow--next" aria-label="下一张">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ====== Page 4: Features Row 1 (一键导入 + Material 3) ====== -->
-    <section id="features-1" class="features-page">
-      <div class="container">
-        <div class="section-title fade-in">
-          <h2>核心功能</h2>
-          <p>不仅仅是课表，更是你的校园生活管家</p>
+    <!-- ===================== Intro ===================== -->
+    <section class="intro site-section">
+      <div class="container" id="about">
+        <div class="intro-top" data-reveal>
+          <div>
+            <div class="sec-label"><span>01</span><i></i>ABOUT</div>
+            <h2 class="display-title">化繁为简<br><strong>触手可及</strong></h2>
+          </div>
+          <p class="intro-lead">
+            GSH课程表基于开源软件二次开发优化，支持一键导入课表、单双周自动识别、桌面小部件、深色模式等核心功能，让课表管理从未如此简单。
+            <br><br>
+            <strong>不仅仅是课表，更是你的校园生活管家。</strong>
+          </p>
         </div>
-        <div class="grid-features">
-          <div class="feature-card card-6 fade-in">
-            <div class="feature-icon blue">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-            </div>
+
+        <div class="stats" data-reveal>
+          <div class="stat">
+            <div class="stat-value">15<small>节/天</small></div>
+            <div class="stat-label">作息适配</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">0</div>
+            <div class="stat-label">广告</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">100<small>%</small></div>
+            <div class="stat-label">免费开源</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== Features ===================== -->
+    <section class="features site-section">
+      <div class="container" id="features">
+        <div class="section-head" data-reveal>
+          <div>
+            <div class="sec-label"><span>02</span><i></i>FEATURES</div>
+            <h2>核心功能</h2>
+          </div>
+          <p>不仅仅是课表，更是你的校园生活管家。六大能力，让每一节课都清晰可见。</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card" data-reveal style="--d:.02s" id="feat-import">
+            <span class="feature-num">01</span>
+            <span class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 14.9A6 6 0 0 1 7.5 4a6 6 0 0 1 11 2.5A4.5 4.5 0 0 1 18 15"/><path d="M12 11v8m-3-3 3 3 3-3"/></svg>
+            </span>
             <h3>一键导入课表</h3>
             <p>支持常见教务系统，登录即自动同步学期课程，无需手动录入。单双周自动识别，作息时间完美匹配常见学院 15 节/天的节奏。</p>
             <div class="feature-tags">
-              <span class="tag tag-blue">教务同步</span>
-              <span class="tag tag-blue">单双周识别</span>
+              <span class="tag">教务同步</span>
+              <span class="tag">单双周识别</span>
             </div>
-          </div>
-          <div class="feature-card card-6 fade-in">
-            <div class="feature-icon green">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-            </div>
+          </article>
+
+          <article class="feature-card" data-reveal style="--d:.06s" id="feat-material">
+            <span class="feature-num">02</span>
+            <span class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg>
+            </span>
             <h3>Material 3 现代化设计</h3>
             <p>基于 Jetpack Compose + Material Design 3 打造，深色模式随心切换，流畅动画触手可及。动态取色让你的课表与壁纸完美融合。</p>
             <div class="feature-tags">
-              <span class="tag tag-green">Jetpack Compose</span>
-              <span class="tag tag-green">深色模式</span>
+              <span class="tag">Jetpack Compose</span>
+              <span class="tag">深色模式</span>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
+          </article>
 
-    <!-- ====== Page 5: Features Row 2 (轻量省电 + 桌面小部件 + 公告推送 + 更多) ====== -->
-    <section id="features-2" class="features-page">
-      <div class="container">
-        <div class="grid-features">
-          <div class="feature-card card-4 fade-in">
-            <div class="feature-icon orange">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h8l-2 8 10-14h-8l2-8z"/></svg>
-            </div>
+          <article class="feature-card" data-reveal style="--d:.1s">
+            <span class="feature-num">03</span>
+            <span class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
+            </span>
             <h3>轻量省电</h3>
             <p>无广告、无后台驻留、启动迅速。默认关闭自动更新检查，减少不必要的网络请求，省心又省电。</p>
             <div class="feature-tags">
-              <span class="tag tag-orange">极速启动</span>
-              <span class="tag tag-orange">零后台</span>
+              <span class="tag">极速启动</span>
+              <span class="tag">零后台</span>
             </div>
-          </div>
-          <div class="feature-card card-4 fade-in">
-            <div class="feature-icon purple">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
-            </div>
+          </article>
+
+          <article class="feature-card" data-reveal style="--d:.02s" id="feat-widget">
+            <span class="feature-num">04</span>
+            <span class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </span>
             <h3>桌面小部件</h3>
             <p>桌面小部件让你一眼看到今日课程，无需打开 App 即可掌握全天安排，省心省电。</p>
             <div class="feature-tags">
-              <span class="tag tag-purple">今日课程</span>
-              <span class="tag tag-purple">桌面直达</span>
+              <span class="tag">今日课程</span>
+              <span class="tag">桌面直达</span>
             </div>
-          </div>
-          <div class="feature-card card-4 fade-in">
-            <div class="feature-icon blue">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-            </div>
+          </article>
+
+          <article class="feature-card" data-reveal style="--d:.06s" id="feat-announce">
+            <span class="feature-num">05</span>
+            <span class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10.5 21a2 2 0 0 0 3 0"/></svg>
+            </span>
             <h3>公告推送</h3>
             <p>重要通知不再错过，考试安排、调课通知第一时间知晓。</p>
             <div class="feature-tags">
-              <span class="tag tag-blue">实时推送</span>
-              <span class="tag tag-blue">教务公告</span>
+              <span class="tag">实时推送</span>
+              <span class="tag">教务公告</span>
             </div>
-          </div>
-          <div class="feature-card card-12 fade-in" style="min-height:auto;padding:1.5rem 2rem;">
-            <div style="display:flex;align-items:center;width:100%;gap:2rem;">
-              <div class="feature-icon purple" style="margin-bottom:0;">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
-              </div>
-              <div style="flex:1;">
-                <h3 style="font-size:1.25rem;margin-bottom:0.25rem;">更多实用特性</h3>
-                <p style="margin-bottom:8px;font-size:0.95rem;">MVVM 架构、Room 数据库、Retrofit 网络请求、Apache 2.0 开源协议，代码结构清晰，欢迎贡献。</p>
-                <div class="feature-tags">
-                  <span class="tag tag-purple">MVVM</span>
-                  <span class="tag tag-purple">Room</span>
-                  <span class="tag tag-purple">Retrofit</span>
-                  <span class="tag tag-purple">Apache 2.0</span>
-                </div>
-              </div>
-              <span style="font-weight:900;opacity:0.06;font-size:3rem;line-height:1;letter-spacing:-2px;flex-shrink:0;color:#1E293B;">GSH</span>
+          </article>
+
+          <article class="feature-card" data-reveal style="--d:.1s">
+            <span class="feature-num">06</span>
+            <span class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/><path d="m13.5 4-3 16"/></svg>
+            </span>
+            <h3>更多实用特性</h3>
+            <p>MVVM 架构、Room 数据库、Retrofit 网络请求、Apache 2.0 开源协议，代码结构清晰，欢迎贡献。</p>
+            <div class="feature-tags">
+              <span class="tag">MVVM</span>
+              <span class="tag">Room</span>
+              <span class="tag">Retrofit</span>
+              <span class="tag">Apache 2.0</span>
             </div>
-          </div>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- ====== Page 6: Screenshots ====== -->
-    <section id="screenshots" class="snap-page">
-      <div class="container">
-        <div class="section-title fade-in">
-          <h2>应用截图</h2>
-          <p>简洁直观，一目了然</p>
+    <!-- ===================== Showcase ===================== -->
+    <section class="showcase site-section">
+      <div class="container" id="screenshots">
+        <div class="section-head section-head--dark" data-reveal>
+          <div>
+            <div class="sec-label sec-label--dark"><span>03</span><i></i>INTERFACE</div>
+            <h2>应用截图</h2>
+          </div>
+          <p>简洁直观，一目了然。从课表周视图到桌面小部件，每一个细节都为日常使用而设计。</p>
         </div>
-        <div class="screenshots-row">
-          <div class="shot-group">
-            <div class="screenshot-card">
-              <img src="assets/001.webp" alt="GSH课程表 截图一" width="200" height="356" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-              <div class="screenshot-placeholder" style="display:none">001.jpg</div>
+
+        <div class="showcase-grid">
+          <article class="shot" data-reveal>
+            <div class="shot-media">
+              <img src="assets/001.webp" alt="GSH课程表 课表周视图截图" width="1220" height="2712" loading="lazy">
             </div>
-            <div class="shot-label">课表周视图<br>课程一目了然</div>
-          </div>
-          <div class="shot-group">
-            <div class="shot-label">桌面小部件<br>今日课程随时看</div>
-            <div class="screenshot-card">
-              <img src="assets/002.webp" alt="GSH课程表 截图二" width="200" height="356" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-              <div class="screenshot-placeholder" style="display:none">002.jpg</div>
+            <div class="shot-body">
+              <span class="shot-num">FIG. 01</span>
+              <h3>课表周视图</h3>
+              <p>课程一目了然。课程名、教室、教师与时间清晰排布，单双周以透明度区分，当前周次自动定位。</p>
             </div>
-          </div>
+          </article>
+
+          <article class="shot" data-reveal style="--d:.08s">
+            <div class="shot-media">
+              <img src="assets/002.webp" alt="GSH课程表 桌面小部件截图" width="1220" height="2712" loading="lazy">
+            </div>
+            <div class="shot-body">
+              <span class="shot-num">FIG. 02</span>
+              <h3>桌面小部件</h3>
+              <p>今日课程随时看。无需打开 App，在桌面即可掌握全天安排，上课地点与时间一屏尽览。</p>
+            </div>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- ====== Page 7: Q&A ====== -->
-    <section id="qa" class="snap-page">
-      <div class="container">
-        <div class="section-title fade-in">
-          <h2>常见问题</h2>
-          <p>大家关心的问题，都在这里解答</p>
+    <!-- ===================== News ===================== -->
+    <section class="news site-section">
+      <div class="container" id="news">
+        <div class="section-head" data-reveal>
+          <div>
+            <div class="sec-label"><span>04</span><i></i>NEWS</div>
+            <h2>版本动态</h2>
+          </div>
+          <div class="head-action">
+            <a href="download.html#changelog" class="text-link">更多资讯
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </div>
         </div>
-        <div class="qa-grid">
-          <div class="qa-item fade-in">
+
+        <div class="news-layout">
+          <div class="news-list" data-reveal>
+            <a href="download.html#changelog" class="news-item">
+              <span class="news-ver">V1.0.5</span>
+              <span class="news-title">优化日常交互体验，并推出 v1.0.5_beta</span>
+              <span class="news-date">2026.09.14</span>
+              <span class="news-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+            <a href="download.html#changelog" class="news-item">
+              <span class="news-ver">V1.0.4</span>
+              <span class="news-title">优化日常使用体验，并推出 v1.0.4_beta</span>
+              <span class="news-date">2026.09.14</span>
+              <span class="news-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+            <a href="download.html#changelog" class="news-item">
+              <span class="news-ver">V1.0.3</span>
+              <span class="news-title">修复了已知 bug，增加了未知 bug，并推出了 v1.0.3_beta</span>
+              <span class="news-date">版本发布</span>
+              <span class="news-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+            <a href="download.html#changelog" class="news-item">
+              <span class="news-ver">V1.0.2</span>
+              <span class="news-title">OI！GSH课程表 v1.0.2_beta 发布了哦</span>
+              <span class="news-date">版本发布</span>
+              <span class="news-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+            <a href="download.html#changelog" class="news-item">
+              <span class="news-ver">V1.0.1</span>
+              <span class="news-title">2026.6.2，GSH课程表 V1.0.1-beta 发布</span>
+              <span class="news-date">2026.06.02</span>
+              <span class="news-arrow">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </a>
+          </div>
+
+          <aside class="news-side" data-reveal style="--d:.08s">
+            <span class="news-side-label">公告 · Notice</span>
+            <h3>GSH课程表官网上线咯~</h3>
+            <p>((q(๑&gt;◡&lt;๑)p))
+可喜可贺，咱们也是有官网了</p>
+            <a href="download.html#changelog" class="text-link">查看更新日志
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section class="faq site-section">
+      <div class="container faq-layout" id="qa">
+        <div class="faq-intro" data-reveal>
+          <div class="sec-label"><span>05</span><i></i>FAQ</div>
+          <h2 class="display-title">常见问题</h2>
+          <p>大家关心的问题，都在这里解答。若仍有疑问，欢迎通过 GitHub 与我们交流。</p>
+          <a href="https://github.com/2lnz/GSH_GreatSchedule" class="text-link" target="_blank" rel="noopener">前往 GitHub
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+
+        <div class="faq-list" data-reveal style="--d:.08s">
+          <div class="faq-item">
             <button class="faq-q" aria-expanded="false">
+              <span class="faq-idx">01</span>
               <span class="faq-q-text">为什么需要开启应用自启动和关闭省电策略？</span>
-              <svg class="faq-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <span class="faq-icon" aria-hidden="true"></span>
             </button>
             <div class="faq-a">
-              <p>本app未在各手机品牌进行报备，无法收到手机厂商内置FCM白名单，也就是无法保持app在后台运行，可能会导致小程序更新不及时的问题，开启则可以避免。经过测试，开启之后仅会增加2%--3%的用电量。</p>
+              <p>本应用未在各手机品牌进行报备，无法加入手机厂商内置的 FCM 白名单，也就是无法保持应用在后台运行，可能会导致课表更新不及时的问题，开启则可以避免。经过测试，开启之后仅会增加 2%–3% 的用电量。</p>
             </div>
           </div>
-          <div class="qa-item fade-in">
+          <div class="faq-item">
             <button class="faq-q" aria-expanded="false">
-              <span class="faq-q-text">对比其他课程表app有什么优势？</span>
-              <svg class="faq-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <span class="faq-idx">02</span>
+              <span class="faq-q-text">对比其他课程表 App 有什么优势？</span>
+              <span class="faq-icon" aria-hidden="true"></span>
             </button>
             <div class="faq-a">
               <p>更加轻量，更加美观，更加干净无广告，完全开源更加安全。</p>
             </div>
           </div>
-          <div class="qa-item fade-in">
+          <div class="faq-item">
             <button class="faq-q" aria-expanded="false">
+              <span class="faq-idx">03</span>
               <span class="faq-q-text">是否考虑推出苹果版本？</span>
-              <svg class="faq-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <span class="faq-icon" aria-hidden="true"></span>
             </button>
             <div class="faq-a">
               <p>目前不考虑，一来是没有 MacBook 和 iPhone，二来是学习成本太高了。</p>
             </div>
           </div>
-          <div class="qa-item fade-in">
+          <div class="faq-item">
             <button class="faq-q" aria-expanded="false">
+              <span class="faq-idx">04</span>
               <span class="faq-q-text">后续是否会继续更新？</span>
-              <svg class="faq-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <span class="faq-icon" aria-hidden="true"></span>
             </button>
             <div class="faq-a">
               <p>会的吧？尽力而为。</p>
@@ -404,109 +551,87 @@
       </div>
     </section>
 
-    <!-- ====== Page 8: Download + About ====== -->
-    <section id="download-about" class="snap-page">
-      <div class="container">
-        <div class="final-download-grid fade-in">
-          <!-- Left: Download -->
-          <div class="download-info">
+    <!-- ===================== Download band ===================== -->
+    <section class="download-band site-section">
+      <span class="download-watermark" aria-hidden="true">GSH</span>
+      <div class="container" id="download">
+        <div class="download-inner" data-reveal>
+          <div class="download-copy">
+            <div class="sec-label sec-label--dark"><span>06</span><i></i>DOWNLOAD</div>
             <h2>下载 GSH课程表</h2>
-            <span class="version-badge">v1.0.4-beta</span>
-            <p>
-              支持 Android 平台，约 25 MB。基于 WakeUpSchedule 开源项目二次开发，深度定制。完全免费，无广告。
-            </p>
-            <div class="download-actions">
-              <a href="https://apk.2lnz.top/%E5%BD%93%E5%89%8D%E7%89%88%E6%9C%AC.apk" class="btn-primary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3m-5 9 5 5 5-5M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/></svg>
-                直接下载（国内首选）
-              </a>
-              <a href="https://gsh.2lnz.top/%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC.apk" class="btn-primary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3m-5 9 5 5 5-5M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/></svg>
-                直接下载（国内备选）
-              </a>
-              <a href="https://home.2lnz.top/%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC.apk" class="btn-secondary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V3m-5 9 5 5 5-5M2 17v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2"/></svg>
-                下载（备用）
-              </a>
-              <a href="https://1840645731.share.123865.com/123pan/wdkNTd-t0sP?" class="btn-secondary" target="_blank" rel="noopener">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
-                123云盘下载（提取码mprp）
-              </a>
-              <a href="https://github.com/2lnz/GSH_GreatSchedule/releases/latest" class="btn-secondary" target="_blank" rel="noopener">从 GitHub Release 下载</a>
-              <a href="https://github.com/2lnz/GSH_GreatSchedule/releases" class="btn-secondary" target="_blank" rel="noopener">查看历史版本</a>
-            </div>
-            <div style="margin-top:1.25rem;">
-              <h3 style="font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>更新日志</h3>
-              <ul class="changelog">
-                <li>适配常见教务系统，一键导入课表</li>
-                <li>全面迁移至 Jetpack Compose + Material 3 设计语言</li>
-                <li>替换默认课程时间为常见作息时间（15 节/天，20 周/学期）</li>
-                <li>新增公告推送功能，重要通知不再错过</li>
-                <li>优化桌面小部件，今日课程一目了然</li>
-                <li>默认关闭自动更新检查，减少后台请求</li>
-              </ul>
+            <span class="version-badge">v1.0.5-beta</span>
+            <p>支持 Android 平台，约 12.8 MB。基于 WakeUpSchedule 开源项目二次开发，深度定制。完全免费，无广告。</p>
+            <div class="download-meta">
+              <span>Android 7.0+</span><i></i><span>无广告</span><i></i><span>Apache 2.0</span>
             </div>
           </div>
 
-          <!-- Right: About -->
-          <div class="download-extras">
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>关于 GSH课程表</h3>
-              <p style="color:var(--text-secondary);font-size:0.9rem;line-height:1.7;">
-                GSH课程表（Great Schedule Helper）是一款专为学生打造的课表管理应用。基于 <a href="https://github.com/YZune/WakeUpSchedule" target="_blank" rel="noopener">WakeUpSchedule</a> 开源项目二次开发，适配新版正方教务系统。
-              </p>
-            </div>
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>致谢</h3>
-              <ul class="changelog">
-                <li><strong>WakeUpSchedule</strong> — 原作者 <a href="https://github.com/YZune" target="_blank" rel="noopener">YZune</a>，开源课表框架</li>
-                <li><strong>北邮适配</strong> — <a href="https://github.com/wangxianfei2002" target="_blank" rel="noopener">XIANFEI</a></li>
-                <li><strong>GSH 开发</strong> — <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a>，UI优化与设计，银杏学院适配与 Material 3 迁移</li>
-                <li><strong>银杏学院适配</strong> — <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a></li>
-                <li><strong>早期贡献</strong> — <a href="https://github.com/wangxianfei2002" target="_blank" rel="noopener">XIANFEI</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>技术栈</h3>
-              <div class="tech-tags">
-                <span class="tech-tag">Kotlin</span>
-                <span class="tech-tag">Jetpack Compose</span>
-                <span class="tech-tag">Material 3</span>
-                <span class="tech-tag">Room</span>
-                <span class="tech-tag">Retrofit</span>
-                <span class="tech-tag">OkHttp</span>
-                <span class="tech-tag">MVVM</span>
-              </div>
-            </div>
-            <div>
-              <h3 style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>许可证</h3>
-              <p style="color:var(--text-secondary);font-size:0.85rem;">本项目基于 <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a> 开源。</p>
-              <p style="color:var(--text-muted);font-size:0.8rem;">Copyright © 2019 YZune, 2020 xianfei, 2026 2LNZ</p>
-            </div>
+          <div class="download-actions">
+            <a class="dl-btn primary" href="https://apk.2lnz.top/gsh.apk" target="_blank" rel="noopener">
+              <strong>直接下载</strong>
+              <small>国内首选</small>
+            </a>
+            <a class="dl-btn" href="https://gsh.2lnz.top/gsh.apk" target="_blank" rel="noopener">
+              <strong>直接下载</strong>
+              <small>国内备选</small>
+            </a>
+            <a class="dl-btn" href="https://home.2lnz.top/gsh.apk" target="_blank" rel="noopener">
+              <strong>备用下载</strong>
+              <small>直连不可用时使用</small>
+            </a>
+            <a class="dl-btn" href="https://1840645731.share.123865.com/123pan/wdkNTd-t0sP?" target="_blank" rel="noopener">
+              <strong>123 云盘下载</strong>
+              <small>提取码 mprp</small>
+            </a>
           </div>
+        </div>
+
+        <div class="download-foot">
+          <a href="download.html" class="text-link text-link--light">查看全部下载方式与更新日志
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="https://github.com/2lnz/GSH_GreatSchedule/releases/latest" class="text-link text-link--light" target="_blank" rel="noopener">从 GitHub Release 下载
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- ====== Page 9: Author ====== -->
-    <section id="author" class="snap-page">
-      <div class="container">
-        <h2 class="section-title-center fade-in">关于作者</h2>
-        <div class="author-card fade-in">
-          <div class="author-avatar-placeholder">
-            <!-- 替换为你的头像 -->
-            <img src="assets/daimao.jpg" alt="2LNZ" width="72" height="72" loading="lazy">
+    <!-- ===================== Author ===================== -->
+    <section class="author site-section">
+      <div class="container author-layout" id="author">
+        <div class="author-profile" data-reveal>
+          <div class="author-photo">
+            <img src="assets/daimao.jpg" alt="2LNZ 头像" width="850" height="850" loading="lazy">
           </div>
-          <h2 class="author-name">2LNZ</h2>
-          <p class="author-bio">无所事事的学生。数码科技爱好者，设计开发一条龙，专修交互与设计。脚踏实地行动派，团队小组的小透明。源于热爱去感受学习与生活。<br>道阻且长，行则将至。</p>
+          <div class="author-id">
+            <div class="sec-label"><span>07</span><i></i>AUTHOR</div>
+            <h2><strong>2LNZ</strong></h2>
+            <p>Great Schedule Helper 开发者</p>
+          </div>
           <div class="author-links">
-            <a href="https://github.com/2lnz" target="_blank" rel="noopener" class="author-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            <a href="https://github.com/2lnz" class="social-link" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
               GitHub
             </a>
-            <a href="https://blog.2lnz.top" target="_blank" rel="noopener" class="author-link">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <a href="https://blog.2lnz.top" class="social-link" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               Blog
+            </a>
+          </div>
+        </div>
+
+        <div class="author-body" data-reveal style="--d:.08s">
+          <p class="author-quote">“道阻且长，<br>行则将至。”</p>
+          <p class="author-bio">
+            无所事事的学生。数码科技爱好者，设计开发一条龙，专修交互与设计。脚踏实地行动派，团队小组的小透明。源于热爱去感受学习与生活。
+          </p>
+          <div class="author-cta">
+            <a href="download.html" class="btn btn-blue">下载应用
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="about.html" class="btn btn-outline-dark">了解 GSH
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
           </div>
         </div>
@@ -514,12 +639,62 @@
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p><a href="about.html">介绍</a> · <a href="download.html">下载</a> · <a href="index.html">首页</a></p>
-    <p>© 2026 GSH课程表 · Apache License 2.0</p>
-    <p>Powered by  <svg width="14" height="14" viewBox="0 0 24 24" fill="#E11D48" stroke="none" style="display:inline;vertical-align:-2px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> </a> · Made with <svg width="14" height="14" viewBox="0 0 24 24" fill="#E11D48" stroke="none" style="display:inline;vertical-align:-2px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> by <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a></p>
+  <!-- ===================== Footer ===================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="brand">
+            <img src="assets/logo.webp" alt="GSH课程表 Logo" width="34" height="34">
+            <span class="brand-text">GSH课程表<small>GREAT SCHEDULE HELPER</small></span>
+          </a>
+          <p>Great Schedule Helper<br>专为学生打造的课表管理应用。完全免费，无广告，开源可拓展。</p>
+          <div class="footer-social">
+            <a href="https://github.com/2lnz" aria-label="GitHub" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            </a>
+            <a href="https://blog.2lnz.top" aria-label="博客" target="_blank" rel="noopener">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>产品</h4>
+          <a href="about.html">产品介绍</a>
+          <a href="index.html#features">核心功能</a>
+          <a href="index.html#screenshots">应用截图</a>
+          <a href="index.html#news">版本动态</a>
+        </div>
+        <div class="footer-col">
+          <h4>支持</h4>
+          <a href="index.html#qa">常见问题</a>
+          <a href="download.html">下载应用</a>
+          <a href="download.html#changelog">更新日志</a>
+          <a href="index.html#author">关于作者</a>
+        </div>
+        <div class="footer-col">
+          <h4>资源</h4>
+          <a href="https://github.com/2lnz/GSH_GreatSchedule" target="_blank" rel="noopener">GitHub 仓库</a>
+          <a href="https://github.com/2lnz/GSH_GreatSchedule/releases" target="_blank" rel="noopener">历史版本</a>
+          <a href="https://github.com/YZune/WakeUpSchedule" target="_blank" rel="noopener">WakeUpSchedule</a>
+          <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache License 2.0</a>
+        </div>
+      </div>
+
+      <div class="footer-wordmark" aria-hidden="true">GSH</div>
+
+      <div class="footer-bottom">
+        <p>© 2026 GSH课程表 · Apache License 2.0</p>
+        <p>Copyright © 2019 YZune, 2020 xianfei, 2026 2LNZ</p>
+        <p>Powered by <span class="footer-heart">♥</span> · Made with <span class="footer-heart">♥</span> by <a href="https://github.com/2lnz" target="_blank" rel="noopener">2LNZ</a></p>
+      </div>
+    </div>
   </footer>
+
+  <button class="to-top" aria-label="回到顶部">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+  </button>
 
   <script src="js/main.js" defer></script>
 </body>
