@@ -33,7 +33,8 @@ class CategoryItemProvider : BaseItemProvider<BaseSettingItem>() {
             }, LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, ViewUtils.getStatusBarHeight(context) + dip(48)))
 
             addView(LinearLayoutCompat(context).apply {
-                setPadding(dip(16), dip(8), dip(16), dip(4))
+                // 与卡片内文字对齐：卡片外边距 + 卡片内边距
+                setPadding(SettingCardStyle.contentInset(context), dip(8), SettingCardStyle.contentInset(context), dip(4))
 
                 addView(AppCompatTextView(context).apply {
                     id = R.id.anko_text_view

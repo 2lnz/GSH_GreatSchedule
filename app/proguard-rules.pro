@@ -246,6 +246,11 @@
   @com.google.gson.annotations.SerializedName <fields>;
 }
 
+# Keep TypeToken subclasses and their generic signatures.
+# R8 otherwise strips/merges the anonymous TypeToken subclass, causing:
+# IllegalStateException: TypeToken must be created with a type argument
+-keep,allowobfuscation class * extends com.google.gson.reflect.TypeToken { *; }
+
 ##---------------End: proguard configuration for Gson  ----------
 
 -keepattributes Annotation

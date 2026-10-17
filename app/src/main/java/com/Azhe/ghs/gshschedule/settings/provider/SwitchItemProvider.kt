@@ -1,10 +1,10 @@
 package com.Azhe.ghs.gshschedule.settings.provider
 
-import android.util.TypedValue
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.provider.BaseItemProvider
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.Azhe.ghs.gshschedule.R
@@ -13,6 +13,7 @@ import com.Azhe.ghs.gshschedule.settings.items.SettingType
 import com.Azhe.ghs.gshschedule.settings.items.SwitchItem
 import com.Azhe.ghs.gshschedule.settings.widget.ThemeSwitch
 import splitties.dimensions.dip
+import splitties.resources.styledColor
 
 class SwitchItemProvider : BaseItemProvider<BaseSettingItem>() {
 
@@ -25,9 +26,7 @@ class SwitchItemProvider : BaseItemProvider<BaseSettingItem>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val view = ConstraintLayout(context).apply {
             id = R.id.anko_layout
-            val outValue = TypedValue()
-            context.theme.resolveAttribute(R.attr.selectableItemBackground, outValue, true)
-            setBackgroundResource(outValue.resourceId)
+            background = SettingCardStyle.cardBackground(context)
             setPadding(dip(16), dip(16), 0, dip(16))
 
             addView(AppCompatTextView(context).apply {
@@ -44,6 +43,7 @@ class SwitchItemProvider : BaseItemProvider<BaseSettingItem>() {
             addView(AppCompatTextView(context).apply {
                 id = R.id.anko_tv_description
                 textSize = 12f
+                setTextColor(styledColor(R.attr.colorOnSurfaceVariant))
             }, ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ConstraintLayout.LayoutParams.WRAP_CONTENT).apply {
                 topMargin = dip(4)
                 startToStart = ConstraintSet.PARENT_ID
@@ -64,9 +64,14 @@ class SwitchItemProvider : BaseItemProvider<BaseSettingItem>() {
                 marginEnd = dip(16)
             })
         }
-        view.layoutParams =
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT)
+        view.layoutParams = RecyclerView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+            marginStart = SettingCardStyle.marginH(view.context)
+            marginEnd = SettingCardStyle.marginH(view.context)
+            topMargin = SettingCardStyle.gapV(view.context)
+            bottomMargin = SettingCardStyle.gapV(view.context)
+        }
         return BaseViewHolder(view)
     }
 

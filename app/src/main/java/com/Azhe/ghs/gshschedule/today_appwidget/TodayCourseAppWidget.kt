@@ -9,10 +9,15 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
+import android.util.TypedValue
 import android.widget.RemoteViews
+import androidx.core.graphics.ColorUtils
+import com.Azhe.ghs.gshschedule.AppDatabase
 import com.Azhe.ghs.gshschedule.R
 import com.Azhe.ghs.gshschedule.SplashActivity
+import com.Azhe.ghs.gshschedule.bean.TableBean
 import com.Azhe.ghs.gshschedule.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -100,6 +105,15 @@ class TodayCourseAppWidget : AppWidgetProvider() {
         val data = TodayWidgetDataManager.loadData(context)
         val rv = RemoteViews(context.packageName, R.layout.today_course_app_widget)
 
+        // 应用「桌面小部件外观」中的字号与文字颜色设置
+        // （格子类设置仅对「一周课程」周视图有意义，日视图不适用）
+        val table = try {
+            AppDatabase.getDatabase(context).tableDao().getDefaultTableSync()
+        } catch (_: Exception) {
+            null
+        }
+        applyAppearance(rv, table)
+
         // Semester name (left, gray, from JSON — empty string if missing)
         val semester = data?.semesterName ?: ""
         rv.setTextViewText(R.id.tv_semester, semester)
@@ -179,6 +193,56 @@ class TodayCourseAppWidget : AppWidgetProvider() {
         rv.setOnClickPendingIntent(R.id.widget_root, openPi)
 
         awm.updateAppWidget(appWidgetId, rv)
+    }
+
+    // ── Appearance ─────────────────────────────────────────────
+
+    /**
+     * 把「桌面小部件外观」中的字号/颜色应用到日视图小部件：
+     * - 小部件显示文字大小：课程名/日期用 +2sp，其余文字用 -1sp
+     * - 小部件标题颜色：始终作用于全部文字（与设置项描述「对于日视图则是全部文字的颜色」一致）
+     * - 小部件课程颜色：覆盖课程名/地点/时间的颜色
+     *
+     * 标题颜色不再把纯黑（#FF000000）当作「未设置」：用户主动选黑色也是一次有效设置。
+     * 课程颜色的默认值仍是白色，白色只用于周视图彩色格子，若不屏蔽会在日视图的
+     * 白色卡片上变成白字白底，因此仍以白色作为「未自定义」的占位值。
+     */
+    private fun applyAppearance(rv: RemoteViews, table: TableBean?) {
+        val baseTextSize = table?.widgetItemTextSize ?: 12
+        val primarySize = (baseTextSize + 2).toFloat()
+        val secondarySize = (baseTextSize - 1).coerceAtLeast(8).toFloat()
+
+        val primaryIds = intArrayOf(
+            R.id.tv_date_num, R.id.tv_name_1, R.id.tv_name_2
+        )
+        val secondaryIds = intArrayOf(
+            R.id.tv_semester, R.id.tv_date_week, R.id.tv_empty,
+            R.id.tv_location_1, R.id.tv_location_2, R.id.tv_time_1, R.id.tv_time_2
+        )
+        primaryIds.forEach {
+            rv.setTextViewTextSize(it, TypedValue.COMPLEX_UNIT_SP, primarySize)
+        }
+        secondaryIds.forEach {
+            rv.setTextViewTextSize(it, TypedValue.COMPLEX_UNIT_SP, secondarySize)
+        }
+
+        if (table == null) return
+
+        // 标题颜色始终生效（包括用户主动选择的纯黑色）
+        (primaryIds + secondaryIds).forEach { rv.setTextColor(it, table.widgetTextColor) }
+
+        val courseColor = table.widgetCourseTextColor
+        if (courseColor != 0xffffffff.toInt()) {
+            intArrayOf(R.id.tv_name_1, R.id.tv_name_2).forEach {
+                rv.setTextColor(it, courseColor)
+            }
+            val secondaryColor = ColorUtils.setAlphaComponent(
+                    courseColor, (Color.alpha(courseColor) * 0.72f).toInt())
+            intArrayOf(
+                R.id.tv_location_1, R.id.tv_location_2,
+                R.id.tv_time_1, R.id.tv_time_2
+            ).forEach { rv.setTextColor(it, secondaryColor) }
+        }
     }
 
     // ── Alarm scheduling ───────────────────────────────────────

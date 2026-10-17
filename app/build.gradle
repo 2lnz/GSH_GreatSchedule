@@ -23,8 +23,8 @@ android {
         applicationId "com.Azhe.ghs.gshschedule"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 104
-        versionName "1.0.4_beta"
+        versionCode 105
+        versionName "1.0.5_beta"
         resValue "string", "app_name", "GSH课程表"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -37,6 +37,9 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFile 'proguard-rules.pro'
+            // 没有 release keystore：直接复用 debug 密钥签名。
+            // release 构建（非 debuggable、可 AOT 优化）能显著降低滑动换周时的主线程耗时。
+            signingConfig signingConfigs.debug
         }
     }
 

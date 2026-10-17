@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.color.DynamicColors
 import com.Azhe.ghs.gshschedule.schedule_settings.ScheduleSettingsActivity
 import com.Azhe.ghs.gshschedule.utils.Const
 import com.Azhe.ghs.gshschedule.utils.getPrefer
@@ -27,8 +26,9 @@ class App : Application() {
                 .setToastTypeface(Typeface.DEFAULT_BOLD)
                 .setTextSize(12)
                 .apply()
-        // Apply Material You dynamic colors (Android 12+)
-        DynamicColors.applyToActivitiesIfAvailable(this)
+        // 关闭 Material You 动态取色：Android 12+ 会用壁纸颜色覆盖主题，
+        // 导致品牌蓝色无法生效。统一使用 colors.xml 中的蓝色种子色。
+        // DynamicColors.applyToActivitiesIfAvailable(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(this, "news", "公告", NotificationManager.IMPORTANCE_LOW)
         }

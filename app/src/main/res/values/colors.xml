@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Material 3 Seed Color -->
-    <color name="seed">#C98294</color>
+    <color name="seed">#4A6CD4</color>
 
     <!-- Legacy aliases for existing code references -->
-    <color name="colorPrimary">#C98294</color>
-    <color name="colorPrimaryDark">#A86B7B</color>
-    <color name="colorAccent">#C98294</color>
+    <color name="colorPrimary">#4A6CD4</color>
+    <color name="colorPrimaryDark">#34519F</color>
+    <color name="colorAccent">#4A6CD4</color>
 
     <color name="grey">#9aa3a3a3</color>
     <color name="deep_grey">#9a505050</color>

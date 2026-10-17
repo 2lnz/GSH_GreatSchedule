@@ -700,11 +700,15 @@ class ImportViewModel(application: Application) : AndroidViewModel(application) 
         val list = withContext(Dispatchers.IO) {
             getApplication<App>().contentResolver.openInputStream(uri)!!.bufferedReader().readLines()
         }
-        val timeTable = gson.fromJson<TimeTableBean>(list[0], object : TypeToken<TimeTableBean>() {}.type)
-        val timeDetails = gson.fromJson<List<TimeDetailBean>>(list[1], object : TypeToken<List<TimeDetailBean>>() {}.type)
-        val table = gson.fromJson<TableBean>(list[2], object : TypeToken<TableBean>() {}.type)
-        val courseBaseList = gson.fromJson<List<CourseBaseBean>>(list[3], object : TypeToken<List<CourseBaseBean>>() {}.type)
-        val courseDetailList = gson.fromJson<List<CourseDetailBean>>(list[4], object : TypeToken<List<CourseDetailBean>>() {}.type)
+        // 显式构造泛型，避免 R8 下匿名 TypeToken 丢失 Signature 属性
+        val timeTable = gson.fromJson(list[0], TimeTableBean::class.java)
+        val timeDetails = gson.fromJson<List<TimeDetailBean>>(list[1],
+            TypeToken.getParameterized(List::class.java, TimeDetailBean::class.java).type)
+        val table = gson.fromJson(list[2], TableBean::class.java)
+        val courseBaseList = gson.fromJson<List<CourseBaseBean>>(list[3],
+            TypeToken.getParameterized(List::class.java, CourseBaseBean::class.java).type)
+        val courseDetailList = gson.fromJson<List<CourseDetailBean>>(list[4],
+            TypeToken.getParameterized(List::class.java, CourseDetailBean::class.java).type)
         val timeTableId = timeTableDao.getMaxId() + 1
         timeTable.id = timeTableId
         timeTable.name = "分享_" + timeTable.name

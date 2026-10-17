@@ -4,8 +4,8 @@
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorOnPrimary">@android:color/white</item>
-        <item name="colorPrimaryContainer">#FFD9E2</item>
-        <item name="colorOnPrimaryContainer">#3B0011</item>
+        <item name="colorPrimaryContainer">#DCE1FF</item>
+        <item name="colorOnPrimaryContainer">#0B1B4D</item>
         <item name="colorSecondary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="coordinatorLayoutStyle">@style/Widget.Support.CoordinatorLayout</item>

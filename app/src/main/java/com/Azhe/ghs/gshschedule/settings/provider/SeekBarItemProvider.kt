@@ -1,10 +1,10 @@
 package com.Azhe.ghs.gshschedule.settings.provider
 
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.provider.BaseItemProvider
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.Azhe.ghs.gshschedule.R
@@ -12,6 +12,7 @@ import com.Azhe.ghs.gshschedule.settings.items.BaseSettingItem
 import com.Azhe.ghs.gshschedule.settings.items.SeekBarItem
 import com.Azhe.ghs.gshschedule.settings.items.SettingType
 import splitties.dimensions.dip
+import splitties.resources.styledColor
 
 class SeekBarItemProvider : BaseItemProvider<BaseSettingItem>() {
 
@@ -23,9 +24,7 @@ class SeekBarItemProvider : BaseItemProvider<BaseSettingItem>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val view = LinearLayout(context).apply {
-            val outValue = TypedValue()
-            context.theme.resolveAttribute(R.attr.selectableItemBackground, outValue, true)
-            setBackgroundResource(outValue.resourceId)
+            background = SettingCardStyle.cardBackground(context)
             setPadding(dip(16), 0, dip(16), 0)
             addView(TextView(context).apply {
                 id = R.id.anko_text_view
@@ -40,6 +39,7 @@ class SeekBarItemProvider : BaseItemProvider<BaseSettingItem>() {
                 id = R.id.anko_tv_prefix
                 textSize = 12f
                 gravity = Gravity.CENTER_VERTICAL
+                setTextColor(styledColor(R.attr.colorOnSurfaceVariant))
             }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT).apply {
                 marginEnd = dip(4)
             })
@@ -48,20 +48,25 @@ class SeekBarItemProvider : BaseItemProvider<BaseSettingItem>() {
                 id = R.id.anko_tv_value
                 textSize = 12f
                 gravity = Gravity.CENTER_VERTICAL
+                setTextColor(styledColor(R.attr.colorOnSurfaceVariant))
             }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT))
 
             addView(TextView(context).apply {
                 id = R.id.anko_tv_unit
                 textSize = 12f
                 gravity = Gravity.CENTER_VERTICAL
+                setTextColor(styledColor(R.attr.colorOnSurfaceVariant))
             }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT).apply {
                 marginStart = dip(4)
             })
 
         }
-        view.layoutParams =
-                ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        view.dip(64))
+        view.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, view.dip(68)).apply {
+            marginStart = SettingCardStyle.marginH(view.context)
+            marginEnd = SettingCardStyle.marginH(view.context)
+            topMargin = SettingCardStyle.gapV(view.context)
+            bottomMargin = SettingCardStyle.gapV(view.context)
+        }
         return BaseViewHolder(view)
     }
 

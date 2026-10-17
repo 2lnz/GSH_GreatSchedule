@@ -5,7 +5,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.content.edit
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -56,34 +55,107 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     var currentWeek by mutableIntStateOf(1)
 
     // ── CourseCard state cache (pre-computed on background thread) ──
-    // Key: "week_day", Value: cached card states for that week/day
-    val cardStateCache = mutableStateMapOf<String, List<CourseCardState>>()
+    // 用普通 ConcurrentHashMap 而不是 Compose 状态：后台预计算写入缓存时不会触发重组，
+    // 页面首次组合（左右滑动换周）时直接命中缓存，主线程不必再计算卡片状态。
+    // 每条缓存都带输入快照，读取时校验；数据变化后旧条目会被自动丢弃。
+    private class CardStatesCacheEntry(
+        val courses: List<CourseBean>,
+        val tableId: Int,
+        val showTime: Boolean,
+        val alphaInt: Int,
+        val timeList: List<TimeDetailBean>,
+        val states: List<CourseCardState>
+    )
+
+    private val cardStateCache = java.util.concurrent.ConcurrentHashMap<String, CardStatesCacheEntry>()
+
+    // 每次清空缓存都会自增；后台预计算写入前检查，避免把旧数据写回新缓存。
+    @Volatile
+    private var cacheGeneration = 0
     private var precomputeJob: kotlinx.coroutines.Job? = null
+
+    /** 取已缓存的卡片状态；输入与缓存时不一致（数据已变）则丢弃该条缓存。 */
+    fun getCachedCardStates(
+        week: Int,
+        day: Int,
+        courses: List<CourseBean>,
+        tableId: Int,
+        showTime: Boolean,
+        alphaInt: Int,
+        timeList: List<TimeDetailBean>
+    ): List<CourseCardState>? {
+        val key = "${week}_$day"
+        val entry = cardStateCache[key] ?: return null
+        val matches = entry.courses == courses && entry.tableId == tableId &&
+                entry.showTime == showTime && entry.alphaInt == alphaInt &&
+                entry.timeList == timeList
+        return if (matches) {
+            entry.states
+        } else {
+            cardStateCache.remove(key, entry)
+            null
+        }
+    }
+
+    fun cacheCardStates(
+        week: Int,
+        day: Int,
+        courses: List<CourseBean>,
+        tableId: Int,
+        showTime: Boolean,
+        alphaInt: Int,
+        timeList: List<TimeDetailBean>,
+        states: List<CourseCardState>
+    ) {
+        cardStateCache["${week}_$day"] = CardStatesCacheEntry(
+            courses = courses,
+            tableId = tableId,
+            showTime = showTime,
+            alphaInt = alphaInt,
+            timeList = timeList,
+            states = states
+        )
+    }
 
     /** Pre-compute card states for the current week ± 1 on a background thread. */
     fun precomputeCardStates(week: Int) {
         precomputeJob?.cancel()
         val ctx = getApplication<App>()
+        // 在主线程拍快照，后台线程不再读取 LiveData / Compose 状态
+        val tableSnapshot = table
+        val timeSnapshot = timeList
+        val alphaSnapshot = alphaInt
+        val coursesByDay = allCourseList.map { it.value ?: emptyList() }
+        val generation = cacheGeneration
         val weeksToCompute = ((week - 1).coerceAtLeast(1)..(week + 1).coerceAtMost(table.maxWeek)).toList()
         precomputeJob = viewModelScope.launch(Dispatchers.Default) {
             for (w in weeksToCompute) {
                 for (day in 1..7) {
+                    if (generation != cacheGeneration) return@launch
                     val key = "${w}_$day"
-                    if (key in cardStateCache) continue  // already cached
-                    val courses = allCourseList[day - 1].value ?: emptyList()
+                    if (cardStateCache.containsKey(key)) continue  // already cached
+                    val courses = coursesByDay[day - 1]
                     if (courses.isEmpty()) continue
                     val states = buildCourseCardStates(
                         courses = courses,
                         week = w,
                         day = day,
-                        table = table,
-                        alphaInt = alphaInt,
-                        timeList = timeList,
+                        table = tableSnapshot,
+                        alphaInt = alphaSnapshot,
+                        timeList = timeSnapshot,
                         context = ctx
                     )
-                    withContext(Dispatchers.Main) {
-                        cardStateCache[key] = states
-                    }
+                    if (generation != cacheGeneration) return@launch
+                    cacheCardStates(
+                        week = w,
+                        day = day,
+                        courses = courses,
+                        tableId = tableSnapshot.id,
+                        showTime = tableSnapshot.showTime,
+                        alphaInt = alphaSnapshot,
+                        timeList = timeSnapshot,
+                        states = states
+                    )
                 }
             }
         }
@@ -92,6 +164,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     /** Invalidate the cache when course data or table config changes. */
     fun invalidateCardStateCache() {
         precomputeJob?.cancel()
+        cacheGeneration++
         cardStateCache.clear()
     }
 
@@ -147,8 +220,9 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
 
     suspend fun updateFromOldVer(json: String) {
         val gson = Gson()
-        val list = gson.fromJson<List<CourseOldBean>>(json, object : TypeToken<List<CourseOldBean>>() {
-        }.type)
+        // 显式构造 List<CourseOldBean> 泛型，避免 R8 下匿名 TypeToken 丢失 Signature 属性
+        val type = TypeToken.getParameterized(List::class.java, CourseOldBean::class.java).type
+        val list = gson.fromJson<List<CourseOldBean>>(json, type)
         val lastId = tableDao.getLastId()
         val tableId = if (lastId != null) {
             lastId + 1

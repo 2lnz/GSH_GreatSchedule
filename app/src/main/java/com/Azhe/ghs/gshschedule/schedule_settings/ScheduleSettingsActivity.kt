@@ -3,6 +3,7 @@ package com.Azhe.ghs.gshschedule.schedule_settings
 import android.app.DatePickerDialog
 import android.appwidget.AppWidgetManager
 import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -24,10 +25,12 @@ import com.Azhe.ghs.gshschedule.base_view.BaseListActivity
 import com.Azhe.ghs.gshschedule.bean.TableBean
 import com.Azhe.ghs.gshschedule.bean.TableSelectBean
 import com.Azhe.ghs.gshschedule.schedule.DonateFragment
+import com.Azhe.ghs.gshschedule.schedule_appwidget.ScheduleAppWidget
 import com.Azhe.ghs.gshschedule.schedule_manage.ScheduleManageActivity
 import com.Azhe.ghs.gshschedule.settings.SettingItemAdapter
 import com.Azhe.ghs.gshschedule.settings.TimeSettingsActivity
 import com.Azhe.ghs.gshschedule.settings.items.*
+import com.Azhe.ghs.gshschedule.today_appwidget.TodayCourseAppWidget
 import com.Azhe.ghs.gshschedule.utils.AppWidgetUtils
 import com.Azhe.ghs.gshschedule.widget.colorpicker.ColorPickerFragment
 import es.dmoral.toasty.Toasty
@@ -53,6 +56,40 @@ class ScheduleSettingsActivity : BaseListActivity(), ColorPickerFragment.ColorPi
             WIDGET_COURSE_TEXT_COLOR -> viewModel.table.widgetCourseTextColor = color
             WIDGET_STROKE_COLOR -> viewModel.table.widgetStrokeColor = color
         }
+        // 小部件外观改动立即落库并刷新桌面小部件，无需先按返回键。
+        // 之前只有 onBackPressed 才会保存，用户改完颜色停在这一页时小部件不会变化，
+        // 表现为「有时候改了几次都没用」。
+        if (dialogId == WIDGET_TITLE_COLOR ||
+                dialogId == WIDGET_COURSE_TEXT_COLOR ||
+                dialogId == WIDGET_STROKE_COLOR) {
+            saveAndRefreshWidgets()
+        }
+    }
+
+    /** 保存当前课表并刷新所有桌面小部件（周视图 + 日视图）。 */
+    private fun saveAndRefreshWidgets() {
+        launch {
+            viewModel.saveSettings()
+            refreshWidgets()
+        }
+    }
+
+    private suspend fun refreshWidgets() {
+        val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
+        viewModel.getScheduleWidgetIds().forEach {
+            when (it.detailType) {
+                // info 为空表示小部件未绑定具体课表（使用默认课表）
+                0 -> if (it.info.isEmpty() || it.info == viewModel.table.id.toString()) {
+                    AppWidgetUtils.refreshScheduleWidget(
+                            applicationContext, appWidgetManager, it.id, viewModel.table)
+                }
+                1 -> AppWidgetUtils.refreshTodayWidget(
+                        applicationContext, appWidgetManager, it.id, viewModel.table, false)
+            }
+        }
+        // 兜底：数据库中可能没有记录小部件实例（如桌面直接添加未经过配置页），
+        // 广播一次保证它们也能收到更新。
+        AppWidgetUtils.updateWidget(applicationContext)
     }
 
     override fun onSetupSubButton(tvButton: AppCompatTextView): AppCompatTextView? {
@@ -174,12 +211,25 @@ class ScheduleSettingsActivity : BaseListActivity(), ColorPickerFragment.ColorPi
             items.add(SwitchItem("显示非本周课程", viewModel.table.showOtherWeekCourse, keys = listOf("非本周")))
 
             items.add(CategoryItem("桌面小部件外观", false))
-            items.add(SeekBarItem("小部件格子高度", viewModel.table.widgetItemHeight, 32, 96, "dp", keys = listOf("格子", "高度", "格子高度", "显示", "小部件", "小", "插件", "桌面")))
-            items.add(SeekBarItem("小部件格子不透明度", viewModel.table.widgetItemAlpha, 0, 100, "%", keys = listOf("格子", "透明", "格子高度", "显示", "小部件", "小", "插件", "桌面")))
+            // 格子高度 / 不透明度 / 边框颜色是「一周课程」周视图独有的概念，
+            // 「当天课程」日视图没有格子可调。桌面只放了日视图小部件时隐藏这三项，
+            // 避免出现点了完全没有效果的设置项。
+            val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
+            val hasWeekWidget = appWidgetManager.getAppWidgetIds(
+                    ComponentName(applicationContext, ScheduleAppWidget::class.java)).isNotEmpty()
+            val hasTodayWidget = appWidgetManager.getAppWidgetIds(
+                    ComponentName(applicationContext, TodayCourseAppWidget::class.java)).isNotEmpty()
+            val showGridWidgetItems = hasWeekWidget || !hasTodayWidget
+            if (showGridWidgetItems) {
+                items.add(SeekBarItem("小部件格子高度", viewModel.table.widgetItemHeight, 32, 96, "dp", keys = listOf("格子", "高度", "格子高度", "显示", "小部件", "小", "插件", "桌面")))
+                items.add(SeekBarItem("小部件格子不透明度", viewModel.table.widgetItemAlpha, 0, 100, "%", keys = listOf("格子", "透明", "格子高度", "显示", "小部件", "小", "插件", "桌面")))
+            }
             items.add(SeekBarItem("小部件显示文字大小", viewModel.table.widgetItemTextSize, 8, 16, "sp", keys = listOf("文字", "大小", "文字大小", "小部件", "小", "插件", "桌面")))
             items.add(VerticalItem("小部件标题颜色", "指标题等字体的颜色\n对于日视图则是全部文字的颜色\n还可以调颜色的透明度哦 (●ﾟωﾟ●)", keys = listOf("颜色", "显示", "文字", "文字颜色", "小部件", "小", "插件", "桌面")))
             items.add(VerticalItem("小部件课程颜色", "指课程格子内的文字颜色\n还可以调颜色的透明度哦 (●ﾟωﾟ●)", keys = listOf("颜色", "显示", "文字", "文字颜色", "小部件", "小", "插件", "桌面")))
-            items.add(VerticalItem("小部件格子边框颜色", "将不透明度调到最低就可以隐藏边框了哦~", keys = listOf("边框", "显示", "边框颜色", "格子", "边", "小部件", "小", "插件", "桌面")))
+            if (showGridWidgetItems) {
+                items.add(VerticalItem("小部件格子边框颜色", "将不透明度调到最低就可以隐藏边框了哦~", keys = listOf("边框", "显示", "边框颜色", "格子", "边", "小部件", "小", "插件", "桌面")))
+            }
         } else {
             // 课程数据模式
             items.add(CategoryItem("课程数据", true))
@@ -271,6 +321,12 @@ class ScheduleSettingsActivity : BaseListActivity(), ColorPickerFragment.ColorPi
                 "小部件格子高度" -> viewModel.table.widgetItemHeight = valueInt
                 "小部件格子不透明度" -> viewModel.table.widgetItemAlpha = valueInt
                 "小部件显示文字大小" -> viewModel.table.widgetItemTextSize = valueInt
+            }
+            // 小部件外观改动立即生效，不必等用户按返回键
+            if (item.title == "小部件格子高度" ||
+                    item.title == "小部件格子不透明度" ||
+                    item.title == "小部件显示文字大小") {
+                saveAndRefreshWidgets()
             }
             item.valueInt = valueInt
             mAdapter.notifyItemChanged(position)
@@ -418,20 +474,9 @@ class ScheduleSettingsActivity : BaseListActivity(), ColorPickerFragment.ColorPi
 
     override fun onBackPressed() {
         launch {
-            AppWidgetUtils.updateWidget(applicationContext)
+            // 先落库，再刷新小部件：否则小部件可能读取到尚未保存的旧配置。
             viewModel.saveSettings()
-            val list = viewModel.getScheduleWidgetIds()
-            val appWidgetManager = AppWidgetManager.getInstance(applicationContext)
-            list.forEach {
-                when (it.detailType) {
-                    0 -> {
-                        if (it.info == viewModel.table.id.toString()) {
-                            AppWidgetUtils.refreshScheduleWidget(applicationContext, appWidgetManager, it.id, viewModel.table)
-                        }
-                    }
-                    1 -> AppWidgetUtils.refreshTodayWidget(applicationContext, appWidgetManager, it.id, viewModel.table, false)
-                }
-            }
+            refreshWidgets()
             setResult(RESULT_OK)
             finish()
         }

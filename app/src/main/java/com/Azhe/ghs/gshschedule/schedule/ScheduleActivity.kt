@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.activity.compose.setContent
@@ -12,8 +11,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -82,13 +79,24 @@ class ScheduleActivity : BaseActivity() {
 
         setContent {
             val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-            // 与设置页（XML 主题 colorPrimary=#C98294 + DynamicColors）保持一致的配色：
-            // Android 12+ 用壁纸动态色，低版本回退到项目 seed 粉色 #C98294。
-            val colorScheme = when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
-                    if (darkTheme) dynamicDarkColorScheme(this) else dynamicLightColorScheme(this)
-                darkTheme -> darkColorScheme(primary = Color(0xFFC98294))
-                else -> lightColorScheme(primary = Color(0xFFC98294))
+            // 与设置页（XML 主题 colorPrimary=#4A6CD4）保持一致的配色：
+            // 关闭 Material You 动态取色后，统一使用品牌蓝色种子 #4A6CD4。
+            val colorScheme = if (darkTheme) {
+                darkColorScheme(
+                    primary = Color(0xFF9FB4FF),
+                    onPrimary = Color(0xFF0B1B4D),
+                    primaryContainer = Color(0xFF33477F),
+                    onPrimaryContainer = Color(0xFFDCE1FF),
+                    secondary = Color(0xFF9FB4FF)
+                )
+            } else {
+                lightColorScheme(
+                    primary = Color(0xFF4A6CD4),
+                    onPrimary = Color.White,
+                    primaryContainer = Color(0xFFDCE1FF),
+                    onPrimaryContainer = Color(0xFF0B1B4D),
+                    secondary = Color(0xFF4A6CD4)
+                )
             }
             MaterialTheme(colorScheme = colorScheme) {
                 ScheduleScreen(

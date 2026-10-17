@@ -29,13 +29,17 @@ import java.util.concurrent.TimeUnit
  */
 object AnnouncementManager {
 
-    /** GitHub Pages 上公告 JSON 的地址 */
-    private const val DEFAULT_JSON_URL =
-        "https://2lnz.github.io/GSH_GreatSchedule/announcement/announcement.json"
-
-    /** 备用地址 — GitHub Raw（主地址被运营商封堵/劫持时使用） */
-    private const val FALLBACK_JSON_URL =
+    /**
+     * 公告 JSON 地址，按顺序依次尝试，前一个失败（超时/劫持/格式错误）才用下一个：
+     *  1. 自定义域名 HTTPS — 直连，无 301 跳转，避免明文 HTTP 被劫持
+     *  2. GitHub Pages — 会 301 到自定义域名的 HTTP 地址，仅作备用
+     *  3. GitHub Raw — 国内常被屏蔽，最后兜底
+     */
+    private val JSON_URLS = listOf(
+        "https://blog.2lnz.top/GSH_GreatSchedule/announcement/announcement.json",
+        "https://2lnz.github.io/GSH_GreatSchedule/announcement/announcement.json",
         "https://raw.githubusercontent.com/2lnz/GSH_GreatSchedule/main/docs/announcement/announcement.json"
+    )
 
     /** SharedPreferences 中存储已读 ID 集合的 key */
     private const val PREF_READ_IDS = "announcement_read_ids"
@@ -117,7 +121,7 @@ object AnnouncementManager {
 
     // ── 内部实现 ────────────────────────────────────────────────
 
-    /** 从网络拉取 JSON 并过滤有效期，优先使用缓存；主地址失败时自动切换备用地址 */
+    /** 从网络拉取 JSON 并过滤有效期，优先使用缓存；地址按 JSON_URLS 顺序逐级回退 */
     private suspend fun fetchValidAnnouncements(context: Context): List<AnnouncementBean> {
         // 缓存命中直接返回
         val cached = cachedAnnouncements
@@ -126,19 +130,15 @@ object AnnouncementManager {
         }
 
         return withContext(Dispatchers.IO) {
-            try {
+            for (url in JSON_URLS) {
                 try {
-                    fetchAndCache(DEFAULT_JSON_URL)
+                    return@withContext fetchAndCache(url)
                 } catch (e: Exception) {
-                    // 主地址失败（运营商封堵 Pages IP、返回劫持页面等）— 切换 GitHub Raw 备用地址
+                    // 该地址失败（超时、运营商封堵、返回劫持页面等）— 继续尝试下一个
                     e.printStackTrace()
-                    fetchAndCache(FALLBACK_JSON_URL)
                 }
-            } catch (e: Exception) {
-                // 两个地址都失败 — 静默失败，不影响 App 正常启动
-                e.printStackTrace()
             }
-            // 有旧缓存（过期但可用）则返回旧数据作为降级
+            // 所有地址都失败 — 有旧缓存（过期但可用）则返回旧数据作为降级
             cachedAnnouncements ?: emptyList()
         }
     }
@@ -146,10 +146,10 @@ object AnnouncementManager {
     /** 拉取 JSON、解析并按有效期过滤，成功后更新内存缓存 */
     private fun fetchAndCache(url: String): List<AnnouncementBean> {
         val json = fetchJson(url)
-        val list: List<AnnouncementBean> = gson.fromJson(
-            json,
-            object : TypeToken<List<AnnouncementBean>>() {}.type
-        )
+        // 用 getParameterized 显式构造泛型，不依赖匿名 TypeToken 子类的 Signature 属性
+        // （R8 会丢失该属性，导致 release 包抛 IllegalStateException）
+        val type = TypeToken.getParameterized(List::class.java, AnnouncementBean::class.java).type
+        val list: List<AnnouncementBean> = gson.fromJson(json, type)
         val now = Date()
         val valid = list.filter { bean ->
             val start = tryParseDate(bean.startTime)

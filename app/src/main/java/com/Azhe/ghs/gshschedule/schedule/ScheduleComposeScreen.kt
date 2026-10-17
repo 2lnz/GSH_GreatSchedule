@@ -9,6 +9,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -48,12 +49,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -65,7 +70,6 @@ import com.Azhe.ghs.gshschedule.bean.TableSelectBean
 import com.Azhe.ghs.gshschedule.utils.CourseUtils
 import com.Azhe.ghs.gshschedule.utils.ViewUtils
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -74,7 +78,7 @@ import kotlin.math.roundToInt
 @androidx.compose.runtime.Stable
 data class CourseCardState(
     val course: CourseBean,
-    val displayText: String,
+    val timeText: String,
     val bgColor: Color,
     val isOtherWeek: Boolean,
     val isMultiCourse: Boolean,
@@ -315,7 +319,7 @@ private fun DrawerContent(
 
 // ── Main content ──
 
-@OptIn(ExperimentalFoundationApi::class, kotlinx.coroutines.FlowPreview::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ScheduleContent(
     viewModel: ScheduleViewModel,
@@ -330,6 +334,13 @@ private fun ScheduleContent(
 
     // Read dataVersion to trigger recomposition when table data changes
     val dataVersion = viewModel.dataVersion
+
+    // 课程数据只在这里观察一次，所有周页面共享。
+    // 若放在各页面里观察，页面首次组合会先拿到空列表、收到数据后再重组一次，
+    // 这两次组合恰好发生在左右滑动的动画过程中，是卡顿的主要来源之一。
+    val courseData = List(7) { dayIndex ->
+        viewModel.allCourseList[dayIndex].observeAsState(emptyList())
+    }
 
     val isDark = (LocalConfiguration.current.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val textColor = if (isDark) MaterialTheme.colorScheme.onSurface else Color(viewModel.table.textColor)
@@ -348,11 +359,11 @@ private fun ScheduleContent(
         }
     }
 
-    // Sync selectedWeek with pager — debounced: only update AFTER scroll settles,
-    // avoiding mid-animation state writes that trigger recomposition and cause jank.
+    // Sync selectedWeek with pager — only after the swipe settles.
+    // settledPage 在滚动完全停止后才变化，避免慢拖途中就写入 selectedWeek、
+    // 触发整页重组和后台预计算，与滚动动画抢主线程造成掉帧。
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
-            .debounce(300L)
+        snapshotFlow { pagerState.settledPage }
             .collectLatest { page ->
                 viewModel.selectedWeek = page + 1
             }
@@ -514,6 +525,7 @@ private fun ScheduleContent(
                 ScheduleGrid(
                     viewModel = viewModel,
                     week = week,
+                    courseData = courseData,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -528,6 +540,7 @@ private fun ScheduleContent(
 fun ScheduleGrid(
     viewModel: ScheduleViewModel,
     week: Int,
+    courseData: List<State<List<CourseBean>>>,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -536,9 +549,39 @@ fun ScheduleGrid(
     // 显式读取 timeList Compose 状态，确保修改后触发重组
     val timeList = viewModel.timeList
 
+    // 文本样式与行高每页只算一次，所有卡片共用：
+    // 避免每张卡片各自创建 TextMeasurer / TextStyle 并重复测量行高。
+    val itemTextSize = table.itemTextSize
+    val textStyle = remember(itemTextSize, density.fontScale) {
+        TextStyle(
+            fontSize = itemTextSize.sp,
+            lineHeight = (itemTextSize + 1).sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+    val textMeasurer = rememberTextMeasurer(cacheSize = 64)
+    val lineHeightPx = remember(textStyle) {
+        textMeasurer.measure(text = "国", style = textStyle, maxLines = 1).size.height.toFloat()
+    }
+
     val col = 6 + (if (table.showSat) 1 else 0) + (if (table.showSun) 1 else 0)
+    // 星期列卡片内容宽度：不在这里使用 BoxWithConstraints（SubcomposeLayout），
+    // 否则整个网格会在测量阶段才组合，换来约 200ms 的布局卡顿。
+    // 主页面内容区宽度即窗口宽度，由配置里的 screenWidthDp 推算即可。
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
+    val cardContentWidthPx = remember(col, screenWidthDp, density) {
+        val columnWidthPx = screenWidthDp * density.density / (col - 0.5f)
+        (columnWidthPx - with(density) { 10.dp.toPx() }).toInt().coerceAtLeast(0)
+    }
     val dayMap = remember(table.showSat, table.showSun, table.sundayFirst) {
         computeDayMap(table.showSat, table.showSun, table.sundayFirst)
+    }
+    // 实际显示顺序：Compose 的 Row 按子项组合顺序从左到右布局，
+    // 「周日为每周第一天」时必须按 周日→周六 迭代，否则周日永远在最右列。
+    // dayMap 的列号语义与此顺序一致（周日起始：周日=列1、周一=列2 …），
+    // 因此每个星期标签的日期与课程仍按 colIdx 正确配对。
+    val dayOrder = remember(table.sundayFirst) {
+        if (table.sundayFirst) listOf(7, 1, 2, 3, 4, 5, 6) else listOf(1, 2, 3, 4, 5, 6, 7)
     }
     val itemHeightDp = with(density) { viewModel.itemHeight.toDp() }
     val marTopDp = with(density) { viewModel.marTop.toDp() }
@@ -553,11 +596,6 @@ fun ScheduleGrid(
             week,
             table.sundayFirst
         )
-    }
-
-    // Observe course data
-    val courseData = List(7) { dayIndex ->
-        viewModel.allCourseList[dayIndex].observeAsState(emptyList())
     }
 
     Column(modifier = modifier) {
@@ -579,7 +617,7 @@ fun ScheduleGrid(
             )
 
             // Day columns
-            for (day in 1..7) {
+            for (day in dayOrder) {
                 val colIdx = dayMap[day]
                 if (colIdx == -1) continue
 
@@ -675,22 +713,44 @@ fun ScheduleGrid(
             }
 
             // Day columns
-            for (day in 1..7) {
+            for (day in dayOrder) {
                 val colIdx = dayMap[day]
                 if (colIdx == -1) continue
 
                 val dayCourses = courseData[day - 1].value
-                val alphaFloat = viewModel.alphaInt / 255f
-                val cardStates = remember(dayCourses, week, table.id, table.showTime, alphaFloat, timeList) {
-                    buildCourseCardStates(
-                        courses = dayCourses ?: emptyList(),
+                val alphaInt = viewModel.alphaInt
+                val courses = dayCourses
+                val cardStates = remember(dayCourses, week, table.id, table.showTime, alphaInt, timeList) {
+                    val cached = viewModel.getCachedCardStates(
+                        week = week,
+                        day = day,
+                        courses = courses,
+                        tableId = table.id,
+                        showTime = table.showTime,
+                        alphaInt = alphaInt,
+                        timeList = timeList
+                    )
+                    val states = cached ?: buildCourseCardStates(
+                        courses = courses,
                         week = week,
                         day = day,
                         table = table,
-                        alphaInt = viewModel.alphaInt,
+                        alphaInt = alphaInt,
                         timeList = timeList,
                         context = context
-                    )
+                    ).also {
+                        viewModel.cacheCardStates(
+                            week = week,
+                            day = day,
+                            courses = courses,
+                            tableId = table.id,
+                            showTime = table.showTime,
+                            alphaInt = alphaInt,
+                            timeList = timeList,
+                            states = it
+                        )
+                    }
+                    states
                 }
 
                 Column(
@@ -722,10 +782,13 @@ fun ScheduleGrid(
                                 CourseCard(
                                     cardState = card,
                                     textColor = Color(table.courseTextColor),
-                                    textSize = table.itemTextSize,
+                                    textStyle = textStyle,
                                     strokeColor = Color(table.strokeColor),
                                     alphaInt = viewModel.alphaInt,
                                     itemHeight = cardHeight,
+                                    contentWidthPx = cardContentWidthPx,
+                                    lineHeightPx = lineHeightPx,
+                                    textMeasurer = textMeasurer,
                                     onCourseClick = {
                                         try {
                                             val detailFragment = CourseDetailFragment.newInstance(card.course)
@@ -751,21 +814,83 @@ fun ScheduleGrid(
 
 // ── Course card ──
 
+/**
+ * 从教室文本中提取教室编号：包含数字的连续英文/数字片段。
+ * 例如「成都校区A121教室」→「A121」、「1号教学楼203」→「203」。
+ * 教室一行放不下时用它替代完整文本，保证编号始终可见。
+ */
+private fun extractRoomNumber(room: String): String? {
+    return Regex("[A-Za-z0-9][A-Za-z0-9\\-–—_]*")
+        .findAll(room)
+        .map { it.value }
+        .filter { token -> token.any { it.isDigit() } }
+        .maxByOrNull { it.length }
+}
+
 @Composable
 private fun CourseCard(
     cardState: CourseCardState,
     textColor: Color,
-    textSize: Int,
+    textStyle: TextStyle,
     strokeColor: Color,
     alphaInt: Int,
     itemHeight: androidx.compose.ui.unit.Dp,
+    contentWidthPx: Int,
+    lineHeightPx: Float,
+    textMeasurer: TextMeasurer,
     onCourseClick: () -> Unit
 ) {
     val bgColor = cardState.bgColor
     val alpha = alphaInt / 255f
     val bgAlpha = bgColor.copy(alpha = alpha)
 
-    val displayTextAlpha = if (cardState.isOtherWeek) alpha * 0.3f else alpha
+    // 边框颜色自带透明度（默认 0x80ffffff），非本周课程再降到 30%，
+    // 与旧版 TipTextView 的描边规则保持一致。
+    val strokeAlphaFactor = if (cardState.isOtherWeek) 0.3f else 1f
+
+    // 卡片上下各 4dp 内边距，内容区高度由卡片总高换算
+    val contentHeightPx = with(LocalDensity.current) { (itemHeight - 8.dp).roundToPx() }
+
+    val timeText = cardState.timeText
+    val roomText = cardState.course.room?.trim().orEmpty()
+    val teacherText = cardState.course.teacher?.trim().orEmpty()
+
+    // 固定字号 + 固定行数排版：
+    //   1. 课程名称（最多 4 行，超出省略）
+    //   2. 教室（单独一行；放不下时优先保留教室编号，如 A121）
+    //   3. 教师（单独一行）
+    // 卡片高度放不下全部行时，优先保证教室、教师两行，剩余空间再分给课程名称。
+    // 行高由页面级统一测量后传入，卡片内不再各自创建 TextMeasurer / SubcomposeLayout。
+    val reservedLines = (if (roomText.isNotEmpty()) 1 else 0) +
+            (if (teacherText.isNotEmpty()) 1 else 0)
+    val totalLines = if (lineHeightPx > 0f) {
+        (contentHeightPx / lineHeightPx).toInt()
+    } else 0
+    val baseLines = (totalLines - reservedLines).coerceAtLeast(0)
+    val nameMaxLines = baseLines.coerceAtMost(4)
+    val showTimeLine = timeText.isNotEmpty() && baseLines - nameMaxLines >= 1
+
+    val finalTextColor = if (cardState.isOtherWeek) {
+        textColor.copy(alpha = 0.3f)
+    } else textColor
+
+    // 教室一行放不下时，优先保留包含数字的教室编号（编号不一定在末尾）
+    val roomDisplay = remember(roomText, contentWidthPx, textStyle) {
+        if (roomText.isEmpty()) {
+            ""
+        } else {
+            val layout = textMeasurer.measure(
+                text = roomText,
+                style = textStyle,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = true,
+                maxLines = 1,
+                constraints = Constraints(maxWidth = contentWidthPx)
+            )
+            if (!layout.hasVisualOverflow) roomText
+            else extractRoomNumber(roomText) ?: roomText
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -773,19 +898,32 @@ private fun CourseCard(
             .height(itemHeight)
             .clip(RoundedCornerShape(4.dp))
             .background(bgAlpha)
+            .border(
+                width = 1.5.dp,
+                color = strokeColor.copy(alpha = strokeColor.alpha * strokeAlphaFactor),
+                shape = RoundedCornerShape(4.dp)
+            )
             .clickable(onClick = onCourseClick)
             .padding(4.dp)
     ) {
-        // Text content
-        Text(
-            text = cardState.displayText,
-            color = if (cardState.isOtherWeek) textColor.copy(alpha = 0.3f) else textColor,
-            fontSize = textSize.sp,
-            fontWeight = FontWeight.Bold,
-            maxLines = 6,
-            overflow = TextOverflow.Ellipsis,
-            lineHeight = (textSize + 2).sp
-        )
+        Column(modifier = Modifier.fillMaxSize()) {
+            if (showTimeLine) {
+                Text(text = timeText, color = finalTextColor, style = textStyle,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            if (nameMaxLines > 0) {
+                Text(text = cardState.course.courseName, color = finalTextColor, style = textStyle,
+                    maxLines = nameMaxLines, overflow = TextOverflow.Ellipsis)
+            }
+            if (roomDisplay.isNotEmpty()) {
+                Text(text = roomDisplay, color = finalTextColor, style = textStyle,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            if (teacherText.isNotEmpty()) {
+                Text(text = teacherText, color = finalTextColor, style = textStyle,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+        }
 
         // Corner indicator for multi-course or error
         if (cardState.isMultiCourse || cardState.isError) {
@@ -1017,27 +1155,11 @@ internal fun buildCourseCardStates(
         // Check for overlap
         val isCovered = if (result.isNotEmpty()) pre.startNode == c.startNode else false
 
-        // Build display text
-        val strBuilder = StringBuilder()
-        strBuilder.append(c.courseName)
-        if (c.room != "") strBuilder.append("\n@${c.room}")
-        if (!c.teacher.isNullOrBlank()) strBuilder.append("\n${c.teacher}")
-        if (isOtherWeek) {
-            when (c.type) {
-                1 -> strBuilder.append("\n单周")
-                2 -> strBuilder.append("\n双周")
-            }
-            strBuilder.append("[非本周]")
-        } else {
-            when (c.type) {
-                1 -> strBuilder.append("\n单周")
-                2 -> strBuilder.append("\n双周")
-            }
-        }
-
-        if (table.showTime && timeList.isNotEmpty() && c.startNode - 1 < timeList.size) {
-            strBuilder.insert(0, timeList[c.startNode - 1].startTime + "\n")
-        }
+        // 卡片排版：课程名称（最多四行，剩余高度不足时优先保留教室/教师行） / 教室（单独一行） / 教师（单独一行）
+        // 单双周、非本周等信息不再显示文字，非本周课程仍通过降低不透明度区分。
+        val timeText = if (table.showTime && timeList.isNotEmpty() && c.startNode - 1 < timeList.size) {
+            timeList[c.startNode - 1].startTime
+        } else ""
 
         // Check if multi-course
         val isMultiCourse = result.any { it.startNode == c.startNode && !it.isOtherWeek } && !isOtherWeek
@@ -1062,7 +1184,7 @@ internal fun buildCourseCardStates(
         result.add(
             CourseCardState(
                 course = c,
-                displayText = strBuilder.toString(),
+                timeText = timeText,
                 bgColor = bgColor,
                 isOtherWeek = isOtherWeek,
                 isMultiCourse = isMultiCourse,
