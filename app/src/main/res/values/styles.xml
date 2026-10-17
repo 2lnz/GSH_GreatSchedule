@@ -34,8 +34,13 @@
 
     <style name="SplashTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:background">@drawable/splash</item>
+        <!-- 真正的窗口背景属性（原先误写成 android:background，对 Window 不生效） -->
+        <item name="android:windowBackground">@drawable/splash</item>
+        <!-- 状态栏/导航栏与启动背景同色，避免启动窗口显示期间透出桌面壁纸 -->
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <style name="ButtonBackground">
