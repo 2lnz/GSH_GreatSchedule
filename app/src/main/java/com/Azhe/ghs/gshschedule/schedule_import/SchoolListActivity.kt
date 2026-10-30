@@ -30,6 +30,7 @@ import com.Azhe.ghs.gshschedule.AppDatabase
 import com.Azhe.ghs.gshschedule.R
 import com.Azhe.ghs.gshschedule.databinding.ActivitySchoolListBinding
 import com.Azhe.ghs.gshschedule.schedule_import.Common.TYPE_CF
+import com.Azhe.ghs.gshschedule.schedule_import.Common.TYPE_GINKGO
 import com.Azhe.ghs.gshschedule.schedule_import.Common.TYPE_HELP
 import com.Azhe.ghs.gshschedule.schedule_import.Common.TYPE_LOGIN
 import com.Azhe.ghs.gshschedule.schedule_import.Common.TYPE_PKU
@@ -173,10 +174,10 @@ class SchoolListActivity : AppCompatActivity(), OnQuickSideBarTouchListener {
         val tableDao = dataBase.tableDao()
         val gson = Gson()
         schools.apply {
-            add(SchoolInfo("*", "成都银杏酒店管理学院", "https://jwxt.gingkoc.edu.cn/xtgl/login_slogin.html", TYPE_ZF_NEW))
-            add(SchoolInfo("*", "北京邮电大学新教务", "http://jwgl.bupt.edu.cn/jsxsd", TYPE_QZ_WITH_NODE))
-            add(SchoolInfo("*", "北京邮电大学新教务（VPN）", "https://vpn.bupt.edu.cn/", TYPE_QZ_WITH_NODE))
-            add(SchoolInfo("*", "北京邮电大学新教务（WebVPN）", "https://webvpn.bupt.edu.cn/", TYPE_QZ_WITH_NODE))
+            add(SchoolInfo("*", GINKGO_NAME, GINKGO_URL, TYPE_GINKGO))
+            add(SchoolInfo("*", "北京邮电大学新教务", "", TYPE_QZ_WITH_NODE))
+            add(SchoolInfo("*", "北京邮电大学新教务（VPN）", "", TYPE_QZ_WITH_NODE))
+            add(SchoolInfo("*", "北京邮电大学新教务（WebVPN）", "", TYPE_QZ_WITH_NODE))
             getImportSchoolBean()?.let {
                 it.sortKey = "★"
                 add(it)
@@ -188,10 +189,10 @@ class SchoolListActivity : AppCompatActivity(), OnQuickSideBarTouchListener {
             add(SchoolInfo("通", "正方教务", "", TYPE_ZF))
             add(SchoolInfo("通", "强智教务", "", TYPE_QZ))
             add(SchoolInfo("通", "旧强智（需要 IE 的那种）", "", TYPE_QZ_OLD))
-            add(SchoolInfo("B", "北京邮电大学新教务", "http://jwgl.bupt.edu.cn/jsxsd", TYPE_QZ_WITH_NODE))
-            add(SchoolInfo("B", "北京邮电大学新教务（VPN）", "https://vpn.bupt.edu.cn/", TYPE_QZ_WITH_NODE))
-            add(SchoolInfo("B", "北京邮电大学新教务（WebVPN）", "https://webvpn.bupt.edu.cn/", TYPE_QZ_WITH_NODE))
-            add(SchoolInfo("C", "成都银杏酒店管理学院", "https://jwxt.gingkoc.edu.cn/xtgl/login_slogin.html", TYPE_ZF_NEW))
+            add(SchoolInfo("B", "北京邮电大学新教务", "", TYPE_QZ_WITH_NODE))
+            add(SchoolInfo("B", "北京邮电大学新教务（VPN）", "", TYPE_QZ_WITH_NODE))
+            add(SchoolInfo("B", "北京邮电大学新教务（WebVPN）", "", TYPE_QZ_WITH_NODE))
+            add(SchoolInfo("C", GINKGO_NAME, GINKGO_URL, TYPE_GINKGO))
         }
 
         val layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -247,7 +248,12 @@ class SchoolListActivity : AppCompatActivity(), OnQuickSideBarTouchListener {
         val gson = Gson()
         val res = gson.fromJson<SchoolInfo>(json, SchoolInfo::class.java)
         if (!res.type.isNullOrEmpty()) {
-            return res
+            // 只有银杏学院保留网址预设；旧版本保存的"新正方"类型升级为专用类型
+            return if (res.name == GINKGO_NAME) {
+                res.copy(url = GINKGO_URL, type = TYPE_GINKGO)
+            } else {
+                res.copy(url = "")
+            }
         }
         return null
     }
@@ -261,5 +267,10 @@ class SchoolListActivity : AppCompatActivity(), OnQuickSideBarTouchListener {
         if (letters.containsKey(letter)) {
             (binding.recyclerView.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(letters[letter]!!, 0)
         }
+    }
+
+    companion object {
+        private const val GINKGO_NAME = "成都银杏酒店管理学院"
+        private const val GINKGO_URL = "https://jwxt.gingkoc.edu.cn/xtgl/login_slogin.html"
     }
 }

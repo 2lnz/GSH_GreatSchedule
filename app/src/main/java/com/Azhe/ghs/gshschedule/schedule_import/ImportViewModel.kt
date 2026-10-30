@@ -61,6 +61,7 @@ class ImportViewModel(application: Application) : AndroidViewModel(application) 
             Common.TYPE_ZF -> ZhengFangParser(source, zfType)
             Common.TYPE_ZF_1 -> ZhengFangParser(source, 1)
             Common.TYPE_ZF_NEW -> NewZFParser(source)
+            Common.TYPE_GINKGO -> GinkgoParser(source)
             Common.TYPE_URP -> UrpParser(source)
             Common.TYPE_URP_NEW -> NewUrpParser(source)
             Common.TYPE_QZ -> {

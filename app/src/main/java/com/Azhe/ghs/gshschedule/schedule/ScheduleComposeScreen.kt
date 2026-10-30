@@ -720,13 +720,14 @@ fun ScheduleGrid(
                 val dayCourses = courseData[day - 1].value
                 val alphaInt = viewModel.alphaInt
                 val courses = dayCourses
-                val cardStates = remember(dayCourses, week, table.id, table.showTime, alphaInt, timeList) {
+                val cardStates = remember(dayCourses, week, table.id, table.showTime, table.showOtherWeekCourse, alphaInt, timeList) {
                     val cached = viewModel.getCachedCardStates(
                         week = week,
                         day = day,
                         courses = courses,
                         tableId = table.id,
                         showTime = table.showTime,
+                        showOtherWeekCourse = table.showOtherWeekCourse,
                         alphaInt = alphaInt,
                         timeList = timeList
                     )
@@ -745,6 +746,7 @@ fun ScheduleGrid(
                             courses = courses,
                             tableId = table.id,
                             showTime = table.showTime,
+                            showOtherWeekCourse = table.showOtherWeekCourse,
                             alphaInt = alphaInt,
                             timeList = timeList,
                             states = it
@@ -758,27 +760,20 @@ fun ScheduleGrid(
                         .weight(1f)
                         .padding(horizontal = 1.dp)
                 ) {
-                    // Course cards positioned in their time slots
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        // Single spacer to establish total column height
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height((itemHeightDp + marTopDp) * table.nodes)
-                        )
-                        // Course cards overlaid — use relative offsets to avoid cumulative shift
-                        Column {
-                            var runningBottom = 0.dp
-                            cardStates.forEach { card ->
-                                val absoluteTop = ((card.startNode - 1) * (viewModel.itemHeight + viewModel.marTop) + viewModel.marTop)
+                    // 课程卡片按绝对位置叠放：同一时间段有多门课时不会互相挤动错位。
+                    // 非本周课程先绘制、本周课程后绘制（覆盖在上方）。
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height((itemHeightDp + marTopDp) * table.nodes)
+                    ) {
+                        cardStates
+                            .sortedBy { if (it.isOtherWeek) 0 else 1 }
+                            .forEach { card ->
+                                val offsetY = ((card.startNode - 1) * (viewModel.itemHeight + viewModel.marTop) + viewModel.marTop)
                                     .let { with(density) { it.toDp() } }
                                 val cardHeight = (viewModel.itemHeight * card.step + viewModel.marTop * (card.step - 1))
                                     .let { with(density) { it.toDp() } }
-                                val relativeSpacer = (absoluteTop - runningBottom).coerceAtLeast(0.dp)
-
-                                if (relativeSpacer > 0.dp) {
-                                    Spacer(modifier = Modifier.height(relativeSpacer))
-                                }
                                 CourseCard(
                                     cardState = card,
                                     textColor = Color(table.courseTextColor),
@@ -789,12 +784,19 @@ fun ScheduleGrid(
                                     contentWidthPx = cardContentWidthPx,
                                     lineHeightPx = lineHeightPx,
                                     textMeasurer = textMeasurer,
+                                    modifier = Modifier.offset(y = offsetY),
                                     onCourseClick = {
                                         try {
-                                            val detailFragment = CourseDetailFragment.newInstance(card.course)
-                                            (context as? androidx.fragment.app.FragmentActivity)
-                                                ?.supportFragmentManager
-                                                ?.let { detailFragment.show(it, "courseDetail") }
+                                            val activity = context as? androidx.fragment.app.FragmentActivity
+                                            if (activity != null) {
+                                                if (card.isMultiCourse) {
+                                                    MultiCourseFragment.newInstance(week, day, card.startNode)
+                                                        .show(activity.supportFragmentManager, "multiCourse")
+                                                } else {
+                                                    CourseDetailFragment.newInstance(card.course)
+                                                        .show(activity.supportFragmentManager, "courseDetail")
+                                                }
+                                            }
                                         } catch (e: Exception) {
                                             es.dmoral.toasty.Toasty.error(
                                                 context.applicationContext, "哎呀>_<差点崩溃了"
@@ -802,9 +804,7 @@ fun ScheduleGrid(
                                         }
                                     }
                                 )
-                                runningBottom = absoluteTop + cardHeight
                             }
-                        }
                     }
                 }
             }
@@ -838,6 +838,7 @@ private fun CourseCard(
     contentWidthPx: Int,
     lineHeightPx: Float,
     textMeasurer: TextMeasurer,
+    modifier: Modifier = Modifier,
     onCourseClick: () -> Unit
 ) {
     val bgColor = cardState.bgColor
@@ -893,7 +894,7 @@ private fun CourseCard(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(itemHeight)
             .clip(RoundedCornerShape(4.dp))
@@ -1130,17 +1131,19 @@ internal fun buildCourseCardStates(
 ): List<CourseCardState> {
     if (courses.isEmpty()) return emptyList()
 
+    val visibleCourses = courses.filter { it.endWeek >= week }
+    val activeCourses = visibleCourses.filter { !isOtherWeekCourse(it, week) }
+    // 同一时间段本周有课时，非本周课程会被完全遮住，不再绘制（避免它占用位置）
+    val activeStartNodes = activeCourses.map { it.startNode }.toHashSet()
+    val activeCountByNode = activeCourses.groupingBy { it.startNode }.eachCount()
+
     val result = mutableListOf<CourseCardState>()
-    var pre = courses.firstOrNull() ?: return emptyList()
 
-    for (course in courses) {
-        if (course.endWeek < week) continue
-
-        val isOtherWeek = (week % 2 == 0 && course.type == 1) ||
-                (week % 2 == 1 && course.type == 2) ||
-                (course.startWeek > week)
+    for (course in visibleCourses) {
+        val isOtherWeek = isOtherWeekCourse(course, week)
 
         if (!table.showOtherWeekCourse && isOtherWeek) continue
+        if (isOtherWeek && course.startNode in activeStartNodes) continue
 
         var isError = false
         var c = course.copy()
@@ -1152,17 +1155,14 @@ internal fun buildCourseCardStates(
             c = c.copy(step = table.nodes - c.startNode + 1); isError = true
         }
 
-        // Check for overlap
-        val isCovered = if (result.isNotEmpty()) pre.startNode == c.startNode else false
-
         // 卡片排版：课程名称（最多四行，剩余高度不足时优先保留教室/教师行） / 教室（单独一行） / 教师（单独一行）
         // 单双周、非本周等信息不再显示文字，非本周课程仍通过降低不透明度区分。
         val timeText = if (table.showTime && timeList.isNotEmpty() && c.startNode - 1 < timeList.size) {
             timeList[c.startNode - 1].startTime
         } else ""
 
-        // Check if multi-course
-        val isMultiCourse = result.any { it.startNode == c.startNode && !it.isOtherWeek } && !isOtherWeek
+        // 同一时间段是否存在多门本周课程（与遍历顺序无关）
+        val isMultiCourse = !isOtherWeek && (activeCountByNode[c.startNode] ?: 0) > 1
 
         // Assign color
         val bgColor = if (c.color.isEmpty()) {
@@ -1173,12 +1173,6 @@ internal fun buildCourseCardStates(
             } catch (e: Exception) {
                 Color(ViewUtils.getCustomizedColor(context, c.id % 16))
             }
-        }
-
-        // Skip covered non-current-week courses
-        if (isCovered && isOtherWeek) {
-            pre = c
-            continue
         }
 
         result.add(
@@ -1193,11 +1187,16 @@ internal fun buildCourseCardStates(
                 step = c.step
             )
         )
-
-        pre = c
     }
 
     return result
+}
+
+/** 该课程在指定周是否不属于"本周"（单双周冲突或还没开课）。 */
+private fun isOtherWeekCourse(course: CourseBean, week: Int): Boolean {
+    return (week % 2 == 0 && course.type == 1) ||
+            (week % 2 == 1 && course.type == 2) ||
+            (course.startWeek > week)
 }
 
 // ── Custom Week Slider ────────────────────────────────────────────────

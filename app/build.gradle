@@ -23,8 +23,8 @@ android {
         applicationId "com.Azhe.ghs.gshschedule"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 105
-        versionName "1.0.5_beta"
+        versionCode 106
+        versionName "1.0.6_beta"
         resValue "string", "app_name", "GSH课程表"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -46,6 +46,11 @@ android {
     buildFeatures {
         viewBinding true
         compose true
+    }
+
+    testOptions {
+        // 单元测试中 android.util.Log 返回默认值，而不是抛 "not mocked"
+        unitTests.returnDefaultValues = true
     }
 
     kapt {

@@ -62,6 +62,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         val courses: List<CourseBean>,
         val tableId: Int,
         val showTime: Boolean,
+        val showOtherWeekCourse: Boolean,
         val alphaInt: Int,
         val timeList: List<TimeDetailBean>,
         val states: List<CourseCardState>
@@ -81,14 +82,15 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         courses: List<CourseBean>,
         tableId: Int,
         showTime: Boolean,
+        showOtherWeekCourse: Boolean,
         alphaInt: Int,
         timeList: List<TimeDetailBean>
     ): List<CourseCardState>? {
         val key = "${week}_$day"
         val entry = cardStateCache[key] ?: return null
         val matches = entry.courses == courses && entry.tableId == tableId &&
-                entry.showTime == showTime && entry.alphaInt == alphaInt &&
-                entry.timeList == timeList
+                entry.showTime == showTime && entry.showOtherWeekCourse == showOtherWeekCourse &&
+                entry.alphaInt == alphaInt && entry.timeList == timeList
         return if (matches) {
             entry.states
         } else {
@@ -103,6 +105,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         courses: List<CourseBean>,
         tableId: Int,
         showTime: Boolean,
+        showOtherWeekCourse: Boolean,
         alphaInt: Int,
         timeList: List<TimeDetailBean>,
         states: List<CourseCardState>
@@ -111,6 +114,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
             courses = courses,
             tableId = tableId,
             showTime = showTime,
+            showOtherWeekCourse = showOtherWeekCourse,
             alphaInt = alphaInt,
             timeList = timeList,
             states = states
@@ -152,6 +156,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
                         courses = courses,
                         tableId = tableSnapshot.id,
                         showTime = tableSnapshot.showTime,
+                        showOtherWeekCourse = tableSnapshot.showOtherWeekCourse,
                         alphaInt = alphaSnapshot,
                         timeList = timeSnapshot,
                         states = states

@@ -12,7 +12,6 @@ import android.view.inputmethod.EditorInfo
 import android.webkit.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.edit
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,10 +21,8 @@ import com.Azhe.ghs.gshschedule.R
 import com.Azhe.ghs.gshschedule.apply_info.ApplyInfoActivity
 import com.Azhe.ghs.gshschedule.base_view.BaseFragment
 import com.Azhe.ghs.gshschedule.databinding.FragmentWebViewLoginBinding
-import com.Azhe.ghs.gshschedule.utils.Const
 import com.Azhe.ghs.gshschedule.utils.Utils
 import com.Azhe.ghs.gshschedule.utils.ViewUtils
-import com.Azhe.ghs.gshschedule.utils.getPrefer
 import es.dmoral.toasty.Toasty
 import splitties.activities.start
 import splitties.snackbar.longSnack
@@ -64,16 +61,11 @@ class WebViewLoginFragment : BaseFragment() {
         ViewUtils.resizeStatusBar(context!!.applicationContext, view.findViewById(R.id.v_status))
 
         if (url != "") {
+            // 只有带网址预设的学校（银杏学院）自动打开，其余教务类型留空
             binding.etUrl.setText(url)
             startVisit()
         } else {
-            val url = context!!.getPrefer().getString(Const.KEY_SCHOOL_URL, "")
-            if (url != "") {
-                binding.etUrl.setText(url)
-            } else {
-                binding.etUrl.setText("https://www.baidu.com")
-            }
-            startVisit()
+            binding.etUrl.setText("")
         }
 
         if (viewModel.importType == "apply") {
@@ -94,6 +86,13 @@ class WebViewLoginFragment : BaseFragment() {
                     "4. 如果遇到总是提示密码错误或者网页错位等问题，可以取消底栏的「电脑模式」或者调节字体缩放"
         } else {
             binding.cgZf.visibility = View.GONE
+        }
+
+        if (viewModel.importType == Common.TYPE_GINKGO) {
+            tips = "1. 教务网址已自动填好，直接登录即可\n" +
+                    "2. 登录后点一次右下角按钮，会自动跳转到「个人课表查询」\n" +
+                    "3. 确认课表显示、学期选择正确后，再点一次按钮完成导入\n" +
+                    "4. 如果遇到密码错误或网页错位，可以取消底栏的「电脑模式」或者调节字体缩放"
         }
 
         if (viewModel.importType == Common.TYPE_HNUST) {
@@ -350,6 +349,16 @@ class WebViewLoginFragment : BaseFragment() {
                 } else {
                     binding.wvCourse.loadUrl("javascript:window.local_obj.showSource(document.getElementsByTagName('html')[0].innerText);")
                 }
+            } else if (viewModel.importType == Common.TYPE_GINKGO) {
+                if (!isRefer) {
+                    // 新正方个人课表查询页面
+                    val referUrl = getHostUrl() + "xskbcx/xskbcx_cxXskbcxIndex.html?gnmkdm=N2151&layout=default"
+                    binding.wvCourse.loadUrl(referUrl)
+                    it.longSnack("请确认学期选择正确、课表显示后，再点一次右下角按钮")
+                    isRefer = true
+                } else {
+                    binding.wvCourse.loadUrl(js)
+                }
             } else {
                 binding.wvCourse.loadUrl(js)
             }
@@ -377,9 +386,6 @@ class WebViewLoginFragment : BaseFragment() {
             binding.etUrl.text.toString() else "http://" + binding.etUrl.text.toString()
         if (URLUtil.isHttpUrl(url) || URLUtil.isHttpsUrl(url)) {
             binding.wvCourse.loadUrl(url)
-            context!!.getPrefer().edit {
-                putString(Const.KEY_SCHOOL_URL, url)
-            }
         } else {
             Toasty.error(context!!, "请输入正确的网址╭(╯^╰)╮").show()
         }

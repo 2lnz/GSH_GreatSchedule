@@ -22,6 +22,7 @@ class SchoolImportListAdapter(layoutResId: Int, data: MutableList<SchoolInfo>) :
             Common.TYPE_ZF to "正方教务",
             Common.TYPE_ZF_1 to "正方教务 1",
             Common.TYPE_ZF_NEW to "新正方教务",
+            Common.TYPE_GINKGO to "银杏教务",
             Common.TYPE_URP to "URP 系统",
             Common.TYPE_URP_NEW to "新 URP 系统",
             Common.TYPE_QZ to "强智教务 0",

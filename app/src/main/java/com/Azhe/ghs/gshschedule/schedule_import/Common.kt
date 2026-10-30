@@ -9,6 +9,7 @@ object Common {
     const val TYPE_ZF = "zf"
     const val TYPE_ZF_1 = "zf_1"
     const val TYPE_ZF_NEW = "zf_new"
+    const val TYPE_GINKGO = "ginkgo" // 成都银杏酒店管理学院（新正方定制）
     const val TYPE_URP = "urp"
     const val TYPE_URP_NEW = "urp_new"
     const val TYPE_QZ = "qz"
