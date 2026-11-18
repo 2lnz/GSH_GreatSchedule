@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/widget_card_bg"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="8dp">
 
     <!-- Top bar: semester name (left) | date + weekday (right) -->
     <RelativeLayout
@@ -52,21 +52,24 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <!-- Course items container -->
+    <!-- Course items container：占据日期栏以下的全部高度，条目均分剩余空间 -->
     <LinearLayout
         android:id="@+id/ll_courses"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
         android:orientation="vertical">
 
         <!-- Course item 1 -->
         <LinearLayout
             android:id="@+id/course_item_1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="4dp"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:visibility="gone">
 
             <ImageView
@@ -77,12 +80,14 @@
                 android:contentDescription="@null" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 android:orientation="vertical"
                 android:gravity="center_vertical">
 
+                <!-- 课程名最多两行，代码里根据课数/高度再收紧到一行 -->
                 <TextView
                     android:id="@+id/tv_name_1"
                     android:layout_width="match_parent"
@@ -93,6 +98,7 @@
                     android:maxLines="2"
                     android:ellipsize="end" />
 
+                <!-- 优先级：课名 > 地点 > 时间。空间不足时整行隐藏时间（代码控制） -->
                 <TextView
                     android:id="@+id/tv_location_1"
                     android:layout_width="match_parent"
@@ -123,8 +129,10 @@
         <LinearLayout
             android:id="@+id/course_item_2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:visibility="gone">
 
             <ImageView
@@ -135,9 +143,10 @@
                 android:contentDescription="@null" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 android:orientation="vertical"
                 android:gravity="center_vertical">
 

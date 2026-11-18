@@ -11,6 +11,8 @@ import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
+import android.os.Bundle
+import android.util.SizeF
 import android.util.TypedValue
 import android.widget.RemoteViews
 import androidx.core.graphics.ColorUtils
@@ -112,7 +114,6 @@ class TodayCourseAppWidget : AppWidgetProvider() {
         } catch (_: Exception) {
             null
         }
-        applyAppearance(rv, table)
 
         // Semester name (left, gray, from JSON — empty string if missing)
         val semester = data?.semesterName ?: ""
@@ -132,6 +133,13 @@ class TodayCourseAppWidget : AppWidgetProvider() {
             nowMins < endMins
         } ?: emptyList()
 
+        // Show up to 2 courses
+        val display = activeCourses.take(2)
+
+        // 根据小部件实际高度选择字号/信息密度；两节课放不下时按「课名 > 地点 > 时间」取舍
+        val appearance = pickAppearance(context, table, awm, appWidgetId, display.size)
+        applyAppearance(rv, table, appearance)
+
         if (data?.semesterEnded == true) {
             // 学期结束提示
             rv.setViewVisibility(R.id.ll_courses, android.view.View.GONE)
@@ -150,9 +158,6 @@ class TodayCourseAppWidget : AppWidgetProvider() {
             rv.setViewVisibility(R.id.ll_courses, android.view.View.VISIBLE)
             rv.setViewVisibility(R.id.tv_empty, android.view.View.GONE)
 
-            // Show up to 2 courses
-            val display = activeCourses.take(2)
-
             for (i in 0..1) {
                 val itemId = if (i == 0) R.id.course_item_1 else R.id.course_item_2
                 val nameId = if (i == 0) R.id.tv_name_1 else R.id.tv_name_2
@@ -163,7 +168,9 @@ class TodayCourseAppWidget : AppWidgetProvider() {
                 if (i < display.size) {
                     val c = display[i]
                     rv.setViewVisibility(itemId, android.view.View.VISIBLE)
+                    rv.setInt(nameId, "setMaxLines", appearance.nameMaxLines)
                     rv.setTextViewText(nameId, c.name)
+                    // 优先级：课名 > 地点 > 时间。地点始终显示，时间放不下时整行隐藏
                     val locText = buildString {
                         append(c.location.ifEmpty { context.getString(R.string.widget_no_location) })
                         if (!c.teacher.isNullOrBlank()) {
@@ -172,9 +179,13 @@ class TodayCourseAppWidget : AppWidgetProvider() {
                         }
                     }
                     rv.setTextViewText(locId, locText)
+                    rv.setViewVisibility(timeId,
+                        if (appearance.showTime) android.view.View.VISIBLE
+                        else android.view.View.GONE)
+                    // 去掉时间两端的空格，窄小部件里也能完整显示
                     rv.setTextViewText(timeId,
                         if (c.startTime == c.endTime) c.startTime
-                        else "${c.startTime} - ${c.endTime}")
+                        else "${c.startTime}-${c.endTime}")
                     // Tiny color bar bitmap (4dp rounded rect)
                     val barBmp = TodayWidgetDataManager.createColorBarBitmap(context, c.color)
                     if (barBmp != null) {
@@ -195,11 +206,133 @@ class TodayCourseAppWidget : AppWidgetProvider() {
         awm.updateAppWidget(appWidgetId, rv)
     }
 
+    /**
+     * 小部件尺寸变化（或首次添加时桌面回报尺寸）后立即重绘，
+     * 让排版跟着高度走，避免内容溢出被裁切。
+     */
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        awm: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: Bundle?
+    ) {
+        super.onAppWidgetOptionsChanged(context, awm, appWidgetId, newOptions)
+        goAsync {
+            try {
+                renderWidget(context, awm, appWidgetId)
+                scheduleRefreshAlarms(context)
+            } catch (_: Exception) {}
+        }
+    }
+
     // ── Appearance ─────────────────────────────────────────────
+
+    /** 一次渲染选定的文字大小与信息密度。 */
+    private data class WidgetAppearance(
+        val primarySp: Float,
+        val secondarySp: Float,
+        val nameMaxLines: Int,
+        val showTime: Boolean
+    )
+
+    /**
+     * 按小部件实际高度从「信息最全」到「最紧凑」挑一种排版。
+     *
+     * 优先级：课名 > 地点 > 时间。以前固定用 +2sp/-1sp、课程名两行、地点+时间
+     * 各占一行，两节课时总高度会超出 2×2 小部件的可用高度，溢出部分被桌面裁掉
+     * ——表现就是第二节课的上课时间只显示一半。这里先缩小字号，空间还不够时
+     * 整行隐藏时间，而不是让它被裁成半截；课名和地点始终保留。
+     */
+    private fun pickAppearance(
+        context: Context,
+        table: TableBean?,
+        awm: AppWidgetManager,
+        appWidgetId: Int,
+        courseCount: Int
+    ): WidgetAppearance {
+        val base = (table?.widgetItemTextSize ?: 12).toFloat()
+        val heightDp = widgetHeightDp(awm, appWidgetId)
+
+        val roomyPrimary = base + 2
+        val roomySecondary = (base - 1).coerceAtLeast(8f)
+        val compactPrimary = base + 1
+        val compactSecondary = (base - 2).coerceAtLeast(8f)
+        val tinyPrimary = minOf(compactPrimary, 12f)
+        val tinySecondary = minOf(compactSecondary, 9f).coerceAtLeast(8f)
+
+        val candidates = if (courseCount <= 1) {
+            listOf(
+                WidgetAppearance(roomyPrimary, roomySecondary, 2, true),
+                WidgetAppearance(roomyPrimary, roomySecondary, 1, true),
+                WidgetAppearance(compactPrimary, compactSecondary, 1, true),
+                WidgetAppearance(compactPrimary, compactSecondary, 1, false),
+                WidgetAppearance(tinyPrimary, tinySecondary, 1, false)
+            )
+        } else {
+            listOf(
+                WidgetAppearance(compactPrimary, compactSecondary, 1, true),
+                WidgetAppearance(compactPrimary, compactSecondary, 1, false),
+                WidgetAppearance(tinyPrimary, tinySecondary, 1, false)
+            )
+        }
+        return candidates.firstOrNull { fitsInAvailableHeight(context, it, courseCount, heightDp) }
+            ?: candidates.last()
+    }
+
+    /**
+     * 判断排版能否放进每个条目。
+     * 布局里两个条目按 weight 均分日期栏以下的剩余高度，所以这里算的是
+     * 「每个条目分到的高度」是否够放 课名 + 地点 + 时间，宁可多算一点。
+     */
+    private fun fitsInAvailableHeight(
+        context: Context,
+        appearance: WidgetAppearance,
+        courseCount: Int,
+        heightDp: Float
+    ): Boolean {
+        val topBar = lineHeightDp(context, appearance.primarySp) + 6f
+        val itemGap = if (courseCount > 1) 4f else 0f
+        val available = heightDp - 16f /* 上下 padding 8dp */ - topBar - itemGap
+        if (available <= 0f) return false
+        val itemShare = available / courseCount.coerceAtLeast(1)
+        val itemNeeded = lineHeightDp(context, appearance.primarySp) * appearance.nameMaxLines +
+                lineHeightDp(context, appearance.secondarySp) * (if (appearance.showTime) 2 else 1) + 2f
+        return itemNeeded <= itemShare
+    }
+
+    /** 单行文字的大致高度（含字体留白），用于估算。 */
+    private fun lineHeightDp(context: Context, textSizeSp: Float): Float {
+        val dm = context.resources.displayMetrics
+        val paint = android.graphics.Paint().apply { textSize = textSizeSp * dm.scaledDensity }
+        return paint.fontSpacing / dm.density * 1.15f
+    }
+
+    /** 小部件当前高度（dp）；取不到时按 2×2 最小高度 110dp 估算。 */
+    private fun widgetHeightDp(awm: AppWidgetManager, appWidgetId: Int): Float {
+        val options = try {
+            awm.getAppWidgetOptions(appWidgetId)
+        } catch (_: Exception) {
+            null
+        } ?: return 110f
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            @Suppress("DEPRECATION")
+            val sizes = options.getParcelableArrayList<SizeF>(AppWidgetManager.OPTION_APPWIDGET_SIZES)
+            sizes?.minOfOrNull { it.height }?.let { if (it > 0f) return it }
+        }
+
+        val minH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+        val maxH = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0)
+        return when {
+            minH > 0 -> minH.toFloat()
+            maxH > 0 -> maxH.toFloat()
+            else -> 110f
+        }
+    }
 
     /**
      * 把「桌面小部件外观」中的字号/颜色应用到日视图小部件：
-     * - 小部件显示文字大小：课程名/日期用 +2sp，其余文字用 -1sp
+     * - 字号由 [pickAppearance] 按可用高度决定
      * - 小部件标题颜色：始终作用于全部文字（与设置项描述「对于日视图则是全部文字的颜色」一致）
      * - 小部件课程颜色：覆盖课程名/地点/时间的颜色
      *
@@ -207,11 +340,7 @@ class TodayCourseAppWidget : AppWidgetProvider() {
      * 课程颜色的默认值仍是白色，白色只用于周视图彩色格子，若不屏蔽会在日视图的
      * 白色卡片上变成白字白底，因此仍以白色作为「未自定义」的占位值。
      */
-    private fun applyAppearance(rv: RemoteViews, table: TableBean?) {
-        val baseTextSize = table?.widgetItemTextSize ?: 12
-        val primarySize = (baseTextSize + 2).toFloat()
-        val secondarySize = (baseTextSize - 1).coerceAtLeast(8).toFloat()
-
+    private fun applyAppearance(rv: RemoteViews, table: TableBean?, appearance: WidgetAppearance) {
         val primaryIds = intArrayOf(
             R.id.tv_date_num, R.id.tv_name_1, R.id.tv_name_2
         )
@@ -220,10 +349,10 @@ class TodayCourseAppWidget : AppWidgetProvider() {
             R.id.tv_location_1, R.id.tv_location_2, R.id.tv_time_1, R.id.tv_time_2
         )
         primaryIds.forEach {
-            rv.setTextViewTextSize(it, TypedValue.COMPLEX_UNIT_SP, primarySize)
+            rv.setTextViewTextSize(it, TypedValue.COMPLEX_UNIT_SP, appearance.primarySp)
         }
         secondaryIds.forEach {
-            rv.setTextViewTextSize(it, TypedValue.COMPLEX_UNIT_SP, secondarySize)
+            rv.setTextViewTextSize(it, TypedValue.COMPLEX_UNIT_SP, appearance.secondarySp)
         }
 
         if (table == null) return
